@@ -252,7 +252,7 @@ const methods = [
     ],
     formulaParts: [
       ["clip", "clip(r, 1-eps_low, 1+eps_high)", "Raises the upper ceiling to reduce entropy collapse."],
-      ["filter", "0 < #correct < G", "Drops zero-gradient groups where relative advantage collapses."],
+      ["filter", "0 < N_{\\mathrm{correct}} < G", "Drops zero-gradient groups where relative advantage collapses."],
       ["denom", "1 / sum_i |o_i|", "Makes token-level gradients comparable across long and short responses."],
       ["shape", "overlong reward shaping", "Separates true wrong answers from truncation/noise."]
     ],
@@ -962,10 +962,10 @@ const methods = [
       ["GRPO update", "Keep the main RL loss and advantage semantics unchanged."]
     ],
     formulaParts: [
-      ["gap", "Delta_t = log pi_T(y_t|s_t^+) - log pi_theta(y_t|s_t)", "Positive gaps mean the privileged teacher endorses the sampled token more strongly."],
-      ["gate", "g_t = sigma(beta Delta_t)", "Detached gates scale auxiliary distillation without rewriting RL advantage."],
-      ["loss", "ell_t_SDAR = g_t(log pi_theta^+ - log pi_theta)", "The extra pressure is token-level and controlled by trust in the teacher signal."],
-      ["total", "L_GRPO + lambda_SDAR L_SDAR", "RL remains primary; SDAR is a stabilizing auxiliary objective."]
+      ["gap", "\\Delta_t = \\log \\pi_T(y_t\\mid s_t^+) - \\log \\pi_\\theta(y_t\\mid s_t)", "Positive gaps mean the privileged teacher endorses the sampled token more strongly."],
+      ["gate", "g_t = \\sigma(\\beta \\Delta_t)", "Detached gates scale auxiliary distillation without rewriting RL advantage."],
+      ["loss", "\\ell_t^{\\mathrm{SDAR}} = g_t\\!\\left(\\log \\pi_\\theta^+(y_t\\mid s_t^+) - \\log \\pi_\\theta(y_t\\mid s_t)\\right)", "The extra pressure is token-level and controlled by trust in the teacher signal."],
+      ["total", "L_{\\mathrm{GRPO}} + \\lambda_{\\mathrm{SDAR}} L_{\\mathrm{SDAR}}", "RL remains primary; SDAR is a stabilizing auxiliary objective."]
     ],
     tags: ["gating", "OPSD", "GRPO", "SkillBank", "ALFWorld"]
   },

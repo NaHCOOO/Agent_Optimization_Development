@@ -3,8 +3,8 @@ const deepData = window.RESEARCH_DATA;
 const copy = {
   zh: {
     navStory: "研究主线", navWorkbench: "方法工作台", navCompare: "对比实验室", navTimeline: "时间线", navLibrary: "论文库",
-    overviewEyebrow: "长程多轮 Agent 优化研究", overviewTitle: "真正变化的不是一个 loss，而是训练信号如何穿过长轨迹",
-    overviewLead: "这份图谱围绕三个问题组织 26 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。",
+    overviewEyebrow: "LLM Agent 长程多轮优化方法发展图谱", overviewTitle: "Agent Optimization Development",
+    overviewLead: "聚焦 LLM Agent 的长程多轮优化：真正变化的不是一个 loss，而是训练信号如何穿过长轨迹。本图谱围绕三个问题组织 26 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。",
     storyEyebrow: "从算法列表到问题演化", storyTitle: "五章研究故事线", storyLead: "每一章都从上一条路线留下的结构性问题出发。点击方法，进入统一的深读工作台。",
     storyMapTitle: "方法演化与关系", storyMapHint: "横轴为首次公开时间；实线表示路线内迭代，虚线表示跨路线融合。点击节点可进入方法深读。", storyMapRoute: "路线内迭代", storyMapFusion: "跨路线融合", storyMapScroll: "可横向滚动查看完整演化路径",
     workbenchEyebrow: "逐篇深读", workbenchTitle: "方法工作台", workbenchLead: "统一拆成：研究判断、机制、公式、训练信号、证据、边界与实现。",
@@ -25,8 +25,8 @@ const copy = {
   },
   en: {
     navStory: "Research story", navWorkbench: "Method workbench", navCompare: "Comparison lab", navTimeline: "Timeline", navLibrary: "Paper library",
-    overviewEyebrow: "Long-horizon agent optimization", overviewTitle: "The real change is not one loss, but how training signal travels through a long trajectory",
-    overviewLead: "This atlas organizes 26 papers around three questions: where the baseline comes from, how outcomes are assigned to intermediate decisions, and how sparse reward works with dense teacher feedback.",
+    overviewEyebrow: "Development atlas for long-horizon LLM agent optimization", overviewTitle: "Agent Optimization Development",
+    overviewLead: "For long-horizon, multi-turn LLM agents, the real change is not one loss but how training signal travels through a trajectory. This atlas organizes 26 papers around three questions: where the baseline comes from, how outcomes are assigned to intermediate decisions, and how sparse reward works with dense teacher feedback.",
     storyEyebrow: "From paper list to problem evolution", storyTitle: "A five-chapter research story", storyLead: "Each chapter starts from a structural limitation left by the previous route. Select any method to open the reading workbench.",
     storyMapTitle: "Method evolution and relationships", storyMapHint: "The x-axis marks first public release. Solid links show within-route iteration; dashed links show cross-route fusion. Select a node for the full reading.", storyMapRoute: "Within-route iteration", storyMapFusion: "Cross-route fusion", storyMapScroll: "Scroll horizontally to inspect the full evolution path",
     workbenchEyebrow: "Paper-by-paper reading", workbenchTitle: "Method workbench", workbenchLead: "A consistent view of claim, mechanism, formula, signal, evidence, boundary and implementation.",
@@ -114,6 +114,7 @@ function formulaHtml(latex, displayMode = true) {
 
 function legacyFormulaHtml(value) {
   const raw = String(value ?? "");
+  if (raw.includes("\\")) return formulaHtml(raw, false);
   const formulaLike = /[=~_^()|+\-*/]|\b(?:pi|theta|lambda|epsilon|eps|gamma|beta|alpha|rho|sigma|omega|Delta|sum|exp|log|clip|min|max|mean|std|KL|E)\b/.test(raw);
   if (!formulaLike) return `<code class="concept-token">${escapeHtml(raw)}</code>`;
   const latex = raw

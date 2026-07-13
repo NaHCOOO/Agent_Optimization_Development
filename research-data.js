@@ -77,7 +77,7 @@ window.RESEARCH_DATA = {
     skillsd: { formula: "L=L_{GRPO}+\\lambda L_{SDL}", unit: "trajectory + token", baseline: "group + skill teacher", critic: "self-teacher", cost: "teacher + skill bank", benchmarks: "AppWorld, Sokoban" },
     sdpo: { formula: "L_{SDPO}=\\sum_t D(\\pi_\\theta(\\cdot|x,y_{<t},f)\\|\\pi_\\theta(\\cdot|x,y_{<t}))", unit: "token", baseline: "feedback self-teacher", critic: "self-teacher", cost: "feedback forward", benchmarks: "math, code, agents" },
     rlsd: { formula: "g_t=\\operatorname{sgn}(\\hat A^{RL})\\cdot m_t^{SD}", unit: "reward direction / token magnitude", baseline: "reward + self-teacher", critic: "optional", cost: "teacher forward", benchmarks: "RLVR reasoning" },
-    sdar: { formula: "L=L_{GRPO}+\\lambda_{SDAR}\\sum_t g_t(\\log\\pi_T(y_t)-\\log\\pi_\\theta(y_t))", unit: "trajectory + gated token", baseline: "group + teacher gap", critic: "self-teacher", cost: "teacher + gate", benchmarks: "ALFWorld, Search-QA, WebShop" },
+    sdar: { formula: "L=L_{\\mathrm{GRPO}}+\\lambda_{\\mathrm{SDAR}}\\sum_t\\ell_t^{\\mathrm{SDAR}},\\qquad \\ell_t^{\\mathrm{SDAR}}=g_t\\!\\left(\\log\\pi_\\theta^+(y_t\\mid s_t^+)-\\log\\pi_\\theta(y_t\\mid s_t)\\right)", unit: "trajectory + gated token", baseline: "group + teacher gap", critic: "self-teacher", cost: "teacher + gate", benchmarks: "ALFWorld, Search-QA, WebShop" },
     serl: { formula: "L=\\sum_{t\\in\\mathcal A}w_t(f_{>t})\\,\\hat A^{task}\\log\\pi_\\theta(a_t|s_t)", unit: "selected action / anchor", baseline: "task reward", critic: "feedback selector", cost: "hindsight feedback", benchmarks: "ALFWorld, WebShop" }
   },
 
@@ -113,4 +113,3 @@ window.RESEARCH_DATA = {
     en: {}
   }
 };
-

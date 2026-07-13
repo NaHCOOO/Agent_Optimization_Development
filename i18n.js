@@ -1,7 +1,7 @@
 window.llmI18n = {
   "ui": {
     "en": {
-      "brand": "LLM Agent RL Explainer",
+      "brand": "Agent Optimization Development",
       "navRoutes": "Routes",
       "navTimeline": "Timeline",
       "navPipeline": "Pipeline",
@@ -64,7 +64,7 @@ window.llmI18n = {
       }
     },
     "zh": {
-      "brand": "LLM Agent 优化图谱",
+      "brand": "Agent Optimization Development",
       "navRoutes": "路线图",
       "navTimeline": "时间线",
       "navPipeline": "流程",
@@ -460,7 +460,7 @@ window.llmI18n = {
         "formulaParts": [
           [
             "过滤",
-            "0 < #correct < G",
+            "0 < N_{\\mathrm{correct}} < G",
             "只训练能产生学习信号的组。"
           ],
           [
@@ -1437,22 +1437,22 @@ window.llmI18n = {
         "formulaParts": [
           [
             "差距",
-            "Delta_t = log pi_T(y_t|s_t^+) - log pi_theta(y_t|s_t)",
+            "\\Delta_t = \\log \\pi_T(y_t\\mid s_t^+) - \\log \\pi_\\theta(y_t\\mid s_t)",
             "正差距表示特权教师更认可当前采样得到的词元。"
           ],
           [
             "门控",
-            "g_t = sigma(beta Delta_t)",
+            "g_t = \\sigma(\\beta \\Delta_t)",
             "停止梯度的门控缩放辅助蒸馏，不改写 RL 优势估计。"
           ],
           [
             "损失",
-            "ell_t_SDAR = g_t(log pi_theta^+ - log pi_theta)",
+            "\\ell_t^{\\mathrm{SDAR}} = g_t\\!\\left(\\log \\pi_\\theta^+(y_t\\mid s_t^+) - \\log \\pi_\\theta(y_t\\mid s_t)\\right)",
             "额外压力是词元级，并由教师信号的可信度控制。"
           ],
           [
             "总目标",
-            "L_GRPO + lambda_SDAR L_SDAR",
+            "L_{\\mathrm{GRPO}} + \\lambda_{\\mathrm{SDAR}} L_{\\mathrm{SDAR}}",
             "RL 是主目标，SDAR 是稳定化辅助项。"
           ]
         ]

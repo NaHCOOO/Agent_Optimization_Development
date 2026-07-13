@@ -1,6 +1,6 @@
-# Agent Optimization Development
+# Agent Optimization Development (AOD)
 
-An interactive bilingual research atlas for long-horizon, multi-turn LLM agent optimization. It covers PPO/value optimization, group-relative policy optimization, multi-turn credit assignment, hierarchical reinforcement learning, on-policy distillation, and hybrid RL-distillation methods.
+An interactive bilingual development atlas for long-horizon, multi-turn LLM agent optimization. It traces how optimization signals, credit assignment units, hierarchy, and self-distillation evolve across 26 representative methods.
 
 ## Website
 
