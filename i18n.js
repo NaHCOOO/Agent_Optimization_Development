@@ -409,7 +409,7 @@ window.llmI18n = {
           ],
           [
             "概率比",
-            "r_i,t",
+            "r_{i,t}",
             "当前策略与旧策略在采样得到的词元上的概率比。"
           ],
           [
@@ -740,7 +740,7 @@ window.llmI18n = {
         "formulaParts": [
           [
             "回合",
-            "A_E(tau)",
+            "A_E(\\tau)",
             "整条轨迹的相对成功度。"
           ],
           [
@@ -750,7 +750,7 @@ window.llmI18n = {
           ],
           [
             "混合",
-            "A_E + omega A_S",
+            "A_E + \\omega A_S",
             "全局结果和局部动作归因的加权组合。"
           ]
         ]
@@ -1076,17 +1076,17 @@ window.llmI18n = {
         "formulaParts": [
           [
             "层级",
-            "plan -> action",
+            "\\mathrm{plan} \\to \\mathrm{action}",
             "轨迹被拆成多层决策。"
           ],
           [
             "归因",
-            "A_plan + A_action",
+            "A_{\\mathrm{plan}} + A_{\\mathrm{action}}",
             "归因区分战略错误和执行错误。"
           ],
           [
             "目标",
-            "L_HRL",
+            "L_{\\mathrm{HRL}}",
             "RL 目标围绕显式层级归因构建。"
           ]
         ]
@@ -1133,22 +1133,22 @@ window.llmI18n = {
         "formulaParts": [
           [
             "local progress",
-            "p_t^k ~ pi_p(.|g_k,a_{t-1}^k,o_t^k,p_{t-1}^k)",
+            "p_t^k \\sim \\pi_p(\\cdot\\mid g_k,a_{t-1}^k,o_t^k,p_{t-1}^k)",
             "local progress 把子任务内部历史折叠成紧凑状态。"
           ],
           [
             "low-level",
-            "a_t^k ~ pi_l(.|g_k,p_t^k,o_t^k)",
+            "a_t^k \\sim \\pi_l(\\cdot\\mid g_k,p_t^k,o_t^k)",
             "低层动作只依赖当前子任务、观测和 local progress。"
           ],
           [
             "high-level",
-            "g_{k+1} ~ pi_h(.|c,G_k,p_hat_k,o_0^{k+1})",
+            "g_{k+1} \\sim \\pi_h(\\cdot\\mid c,G_k,\\hat{p}_k,o_0^{k+1})",
             "完成的子任务和 final local progress 决定下一个子任务。"
           ],
           [
             "offline RL",
-            "A(s,u)=Q_phi(s,u)-V_psi(s)",
+            "A(s,u)=Q_\\phi(s,u)-V_\\psi(s)",
             "用 step transition 上的 advantage-weighted regression 改进策略。"
           ]
         ]
@@ -1200,17 +1200,17 @@ window.llmI18n = {
           ],
           [
             "decision",
-            "y_{k,j} ~ pi_theta(.|C_{k,j},xi_{k,j})",
+            "y_{k,j} \\sim \\pi_\\theta(\\cdot\\mid C_{k,j},\\xi_{k,j})",
             "输出可以继续当前子目标，也可以切换到新子目标。"
           ],
           [
             "reflection",
-            "(eta_{k,t},z_{k,t}) ~ pi_theta(.|H_{<k},g_k,h_{k,t},o_t)",
+            "(\\eta_{k,t},z_{k,t}) \\sim \\pi_\\theta(\\cdot\\mid H_{<k},g_k,h_{k,t},o_t)",
             "reflection 判断子目标完成状态，并准备下一次决策。"
           ],
           [
             "score",
-            "S_t=R_env+r_t^proc",
+            "S_t=R_{\\mathrm{env}}+r_t^{\\mathrm{proc}}",
             "step-level score 由终局成功信号和局部过程惩罚组成。"
           ]
         ]

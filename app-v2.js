@@ -120,14 +120,20 @@ function legacyFormulaHtml(value) {
   const latex = raw
     .replaceAll("->", "\\to ")
     .replaceAll("proportional to", "\\propto ")
+    .replace(/\bP_hat\b/g, "\\hat P")
+    .replace(/\bp_hat\b/g, "\\hat p")
+    .replace(/\bA_tilde\b/g, "\\widetilde A")
     .replace(/\bDelta\b/g, "\\Delta")
-    .replace(/\b(pi|theta|lambda|epsilon|eps|gamma|beta|alpha|rho|sigma|omega)\b/g, (token) => `\\${token === "eps" ? "epsilon" : token}`)
-    .replace(/\b(pi|theta|lambda|epsilon|eps|gamma|beta|alpha|rho|sigma|omega)_/g, (token, greek) => `\\${greek === "eps" ? "epsilon" : greek}_`)
+    .replace(/(^|[^A-Za-z])(pi|theta|lambda|epsilon|eps|gamma|beta|alpha|rho|sigma|omega|phi|psi|eta|xi|tau|delta|ell)(?=$|[^A-Za-z])/g,
+      (_match, prefix, greek) => `${prefix}\\${greek === "eps" ? "epsilon" : greek}`)
     .replace(/\bsum_([a-z])/g, "\\sum_{$1}")
     .replace(/\b(exp|log|min|max)\b/g, "\\$1")
     .replace(/\b(clip|mean|std|sign|softmax|Filter)\b/g, "\\operatorname{$1}")
     .replace(/\bKL\b/g, "D_{KL}")
     .replace(/\bE\[/g, "\\mathbb{E}[")
+    .replace(/_(?!\{)(\\[A-Za-z]+|[A-Za-z0-9]+|<[^,\s)\]}]+)/g, "_{$1}")
+    .replace(/\^\(([^)]+)\)/g, "^{($1)}")
+    .replace(/\^(?!\{)(\\[A-Za-z]+|[A-Za-z0-9]+)/g, "^{$1}")
     .replace(/~/g, "\\sim ");
   return formulaHtml(latex, false);
 }

@@ -210,7 +210,7 @@ const methods = [
     formulaParts: [
       ["group", "G responses", "The group replaces a learned value baseline."],
       ["advantage", "(R_i - mean R) / std R", "Relative reward inside the same prompt group."],
-      ["ratio", "r_i,t", "Token-level old/new policy probability ratio."],
+      ["ratio", "r_{i,t}", "Token-level old/new policy probability ratio."],
       ["broadcast", "A_i for all tokens", "Credit is coarse: every token in a response receives the same sign and magnitude."]
     ],
     tags: ["critic-free", "group baseline", "RLVR"]
@@ -458,9 +458,9 @@ const methods = [
       ["Joint update", "Use A_E + omega A_S in a clipped objective."]
     ],
     formulaParts: [
-      ["episode", "A_E(tau)", "Macro reward relative to other full trajectories."],
-      ["anchor", "G_S(s~)={(a_t,R_t): s_t=s~}", "Step groups are mined from existing rollouts."],
-      ["joint", "A=A_E+omega A_S", "Credit combines global success and local action quality."]
+      ["episode", "A_E(\\tau)", "Macro reward relative to other full trajectories."],
+      ["anchor", "\\mathcal{G}_S(\\tilde{s})=\\{(a_t,R_t):s_t=\\tilde{s}\\}", "Step groups are mined from existing rollouts."],
+      ["joint", "A=A_E+\\omega A_S", "Credit combines global success and local action quality."]
     ],
     tags: ["verl-agent", "anchor state", "step advantage", "ALFWorld", "WebShop"]
   },
@@ -705,9 +705,9 @@ const methods = [
       ["Refine policy", "Improve both strategic and operational behavior."]
     ],
     formulaParts: [
-      ["hierarchy", "plan -> action", "The trajectory is decomposed into levels of decision-making."],
-      ["credit", "A_plan + A_action", "Credit assignment distinguishes strategic and execution errors."],
-      ["objective", "L_HRL", "The RL objective is structured around explicit hierarchical credit."]
+      ["hierarchy", "\\mathrm{plan} \\to \\mathrm{action}", "The trajectory is decomposed into levels of decision-making."],
+      ["credit", "A_{\\mathrm{plan}} + A_{\\mathrm{action}}", "Credit assignment distinguishes strategic and execution errors."],
+      ["objective", "L_{\\mathrm{HRL}}", "The RL objective is structured around explicit hierarchical credit."]
     ],
     tags: ["hierarchical RL", "explicit credit", "LLM agents", "ICML"]
   },
@@ -748,10 +748,10 @@ const methods = [
       ["Compact execution", "Run with current subtask, observation, and local progress rather than full history."]
     ],
     formulaParts: [
-      ["local-progress", "p_t^k ~ pi_p(.|g_k,a_{t-1}^k,o_t^k,p_{t-1}^k)", "Local progress folds subtask-local history into a compact state."],
-      ["low-level", "a_t^k ~ pi_l(.|g_k,p_t^k,o_t^k)", "Primitive actions depend on subtask, observation, and local progress."],
-      ["high-level", "g_{k+1} ~ pi_h(.|c,G_k,p_hat_k,o_0^{k+1})", "Completed subtasks and final local progress drive the next subtask."],
-      ["offline-rl", "A(s,u)=Q_phi(s,u)-V_psi(s)", "The policy is improved by advantage-weighted regression on step transitions."]
+      ["local-progress", "p_t^k \\sim \\pi_p(\\cdot\\mid g_k,a_{t-1}^k,o_t^k,p_{t-1}^k)", "Local progress folds subtask-local history into a compact state."],
+      ["low-level", "a_t^k \\sim \\pi_l(\\cdot\\mid g_k,p_t^k,o_t^k)", "Primitive actions depend on subtask, observation, and local progress."],
+      ["high-level", "g_{k+1} \\sim \\pi_h(\\cdot\\mid c,G_k,\\hat{p}_k,o_0^{k+1})", "Completed subtasks and final local progress drive the next subtask."],
+      ["offline-rl", "A(s,u)=Q_\\phi(s,u)-V_\\psi(s)", "The policy is improved by advantage-weighted regression on step transitions."]
     ],
     tags: ["ACL", "HRL", "offline RL", "local progress", "ScienceWorld", "ALFWorld"]
   },
@@ -793,9 +793,9 @@ const methods = [
     ],
     formulaParts: [
       ["context", "C_{k,j}=[c;H_{<k};g_k;T_{k,j}]", "The policy sees folded global progress plus current-subgoal local history."],
-      ["decision", "y_{k,j} ~ pi_theta(.|C_{k,j},xi_{k,j})", "The output may continue the current subgoal or transition to a new one."],
-      ["reflection", "(eta_{k,t},z_{k,t}) ~ pi_theta(.|H_{<k},g_k,h_{k,t},o_t)", "Reflection judges subgoal completion and prepares the next decision."],
-      ["score", "S_t=R_env+r_t^proc", "Step-level scores combine terminal success with local process penalties."]
+      ["decision", "y_{k,j} \\sim \\pi_\\theta(\\cdot\\mid C_{k,j},\\xi_{k,j})", "The output may continue the current subgoal or transition to a new one."],
+      ["reflection", "(\\eta_{k,t},z_{k,t}) \\sim \\pi_\\theta(\\cdot\\mid H_{<k},g_k,h_{k,t},o_t)", "Reflection judges subgoal completion and prepares the next decision."],
+      ["score", "S_t=R_{\\mathrm{env}}+r_t^{\\mathrm{proc}}", "Step-level scores combine terminal success with local process penalties."]
     ],
     tags: ["HRL", "information folding", "GRPO", "verl-agent", "ALFWorld", "ScienceWorld", "VirtualHome"]
   },
