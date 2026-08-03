@@ -1,10 +1,16 @@
-# Agent Optimization Development (AOD)
+# Agentic System Research Atlas
 
-An interactive bilingual development atlas for long-horizon, multi-turn LLM agent optimization. It traces how optimization signals, credit assignment units, hierarchy, and self-distillation evolve across 26 representative methods.
+An interactive bilingual research atlas with two parallel modules:
+
+- **Agent Optimization Development**: 27 methods for long-horizon, multi-turn LLM training, credit assignment, hierarchy, reinforcement learning, and on-policy distillation.
+- **LLM Multi-Agent System Design**: 25 formal papers on Agent construction, team selection, topology, workflow, communication, runtime adaptation, reliability, and MARL transfer.
+
+The modules meet at the joint objective over model parameters `theta` and system parameters `phi`.
 
 ## Website
 
-https://nahcooo.github.io/Agent_Optimization_Development/
+- Optimization: https://nahcooo.github.io/Agent_Optimization_Development/
+- System design: https://nahcooo.github.io/Agent_Optimization_Development/system-design.html
 
 ## Local preview
 

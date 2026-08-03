@@ -979,6 +979,74 @@ window.llmI18n = {
           ]
         ]
       },
+      "glider": {
+        "branch": "离线层级",
+        "oneLine": "GLIDER 通过层级式 SFT、离线 actor-critic 优化和可选的 offline-to-online adaptation，构建参数高效的双层 LLM Agent。",
+        "motivation": "长程 LLM Agent 在稀疏奖励下探索不足、长期归因困难；扁平策略还会把任务规划与原子动作执行混在同一时间尺度。",
+        "modifications": [
+          "让高层策略每 c 步生成一个文本子目标，低层策略根据子目标与观测执行原子动作。",
+          "从离线轨迹分别构造使用任务奖励的高层 transition，以及使用内在完成奖励的低层 transition。",
+          "高低层与 actor-critic 共享冻结的 LLM backbone，通过 hierarchy prompt 和 LoRA 做参数高效训练。",
+          "用 IQL 式损失训练句子级 Q/V critic，并用 AWAC advantage-weighted likelihood 更新 token-level actor。",
+          "在线适应阶段冻结任务无关的低层技能，只更新高层策略与 critic。"
+        ],
+        "training": "先做层级式 behavior cloning，再做 IQL/AWAC 风格离线 actor-critic 优化，最后可选地进行高层 offline-to-online adaptation。",
+        "advantage": "句子级 A(s,u)=Q_phi(s,u)-V_psi(s) 为一个完整文本子目标或动作的全部 token 提供同一权重。",
+        "objective": "GLIDER 目标：用离线 advantage 指数加权高低层 token likelihood，并以层级式 SFT 初始化。",
+        "credit": "高层子目标使用外在任务回报；低层动作使用子任务完成内在奖励。",
+        "feedback": "高层使用环境奖励；低层使用从环境观测中判断的二元子任务完成信号。",
+        "openSource": "官方开源。",
+        "framework": "官方 GLIDER 仓库；DeepSpeed、Hugging Face Transformers 与 LoRA；自定义 IQL/AWAC 式离线 RL，不基于 verl。",
+        "pipeline": [
+          [
+            "层级数据",
+            "把示范轨迹拆成 c 步高层子目标 transition 和原子级低层动作 transition。"
+          ],
+          [
+            "层级式 SFT",
+            "对高低层分别做 behavior cloning，并用长度正则鼓励简洁输出。"
+          ],
+          [
+            "句子级 critic",
+            "在带奖励的离线 transition 上训练 Q 与 expectile V。"
+          ],
+          [
+            "Token-level actor",
+            "把句子级 advantage 转成 AWAC 指数权重，作用于自回归 token likelihood。"
+          ],
+          [
+            "Offline-to-online",
+            "冻结可迁移的低层技能，通过新交互适应高层策略。"
+          ]
+        ],
+        "formulaParts": [
+          [
+            "层级策略",
+            "g_t \\sim \\pi_\\theta^h(\\cdot\\mid d,o_t),\\qquad a_t \\sim \\pi_\\theta^l(\\cdot\\mid g_t,o_t)",
+            "规划在较粗时间尺度运行，执行器负责生成原子动作。"
+          ],
+          [
+            "层级数据集",
+            "D^h:(d;o_t,g_t,R_t,o_{t+c}),\\qquad D^l:(g_t;o_i,a_i,\\hat r_i,o_{i+1})",
+            "外在任务回报监督规划器，内在完成奖励监督执行器。"
+          ],
+          [
+            "层级式 SFT",
+            "\\mathcal L_{\\mathrm{SFT}}=-\\mathbb E_{D^h}\\log\\pi_\\theta^h-\\mathbb E_{D^l}\\log\\pi_\\theta^l+\\lambda(n_h+n_l)",
+            "Behavior cloning 初始化高低层，并惩罚不必要的冗长子目标或动作。"
+          ],
+          [
+            "句子级 critic",
+            "A(s,u)=Q_\\phi(s,u)-V_\\psi(s)",
+            "critic 对完整文本子目标或动作做句子级评价。"
+          ],
+          [
+            "Token-level actor",
+            "\\mathcal L_\\pi=-\\mathbb E_{(s,u)\\sim D^r}\\!\\left[e^{A(s,u)/\\lambda}\\log\\pi_\\theta(u\\mid s)\\right]",
+            "AWAC 把离线 advantage 转成 token-level 最大似然权重。"
+          ]
+        ]
+      },
       "turnppo": {
         "branch": "Turn-Level Advantage",
         "oneLine": "Turn-PPO 在对话轮次上估计优势，让 PPO 能更低噪声地训练多轮 Agent 动作。",

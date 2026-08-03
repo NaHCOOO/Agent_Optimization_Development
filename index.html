@@ -11,13 +11,14 @@
     <title>Agent Optimization Development</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
-    <link rel="stylesheet" href="./styles.css?v=21">
+    <link rel="stylesheet" href="./styles.css?v=25">
+    <link rel="stylesheet" href="./mas.css?v=25">
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#overview" aria-label="Agent Optimization Development">
-        <span class="brand-mark" aria-hidden="true">AOD</span>
-        <span><strong>Agent Optimization</strong><small>Development Atlas</small></span>
+      <a class="brand" href="#overview" aria-label="Agentic System Research Atlas">
+        <span class="brand-mark" aria-hidden="true">AS</span>
+        <span><strong>Agentic System</strong><small>Research Atlas</small></span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#story" data-copy="navStory">研究主线</a>
@@ -31,12 +32,16 @@
 
     <main>
       <section id="overview" class="overview section" aria-labelledby="overview-title">
+        <nav class="research-switch" aria-label="Agentic System research modules">
+          <a class="active" href="./index.html#overview" aria-current="page"><span>01</span><b data-copy="moduleOptimization">LLM 训练与优化</b></a>
+          <a href="./system-design.html#overview"><span>02</span><b data-copy="moduleSystem">Multi-Agent System 设计</b></a>
+        </nav>
         <div class="overview-copy">
           <div class="overview-heading">
             <p class="eyebrow" data-copy="overviewEyebrow">LLM Agent 长程多轮优化方法发展图谱</p>
             <h1 id="overview-title" data-copy="overviewTitle">Agent Optimization Development</h1>
           </div>
-          <p class="lead" data-copy="overviewLead">聚焦 LLM Agent 的长程多轮优化：真正变化的不是一个 loss，而是训练信号如何穿过长轨迹。本图谱围绕三个问题组织 26 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。</p>
+          <p class="lead" data-copy="overviewLead">聚焦 LLM Agent 的长程多轮优化：真正变化的不是一个 loss，而是训练信号如何穿过长轨迹。本图谱围绕三个问题组织 27 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。</p>
         </div>
         <div class="overview-stats" id="overview-stats" aria-label="Corpus summary"></div>
         <div class="thesis-strip" id="thesis-strip"></div>
@@ -147,9 +152,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-    <script src="./i18n.js?v=21"></script>
-    <script src="./app.js?v=21"></script>
-    <script src="./research-data.js?v=21"></script>
-    <script src="./app-v2.js?v=21"></script>
+    <script src="./i18n.js?v=25"></script>
+    <script src="./app.js?v=25"></script>
+    <script src="./research-data.js?v=25"></script>
+    <script src="./app-v2.js?v=25"></script>
   </body>
 </html>

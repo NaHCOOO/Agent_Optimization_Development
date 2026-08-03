@@ -630,6 +630,52 @@ const methods = [
     tags: ["procedure", "branching score", "future-aware credit"]
   },
   {
+    id: "glider",
+    name: "GLIDER",
+    year: 2025,
+    month: 5,
+    venue: "ICML 2025",
+    paperTitle: "Divide and Conquer: Grounding LLMs as Efficient Decision-Making Agents via Offline Hierarchical Reinforcement Learning",
+    category: "multi",
+    branch: "offline hierarchy",
+    x: 100,
+    y: 535,
+    oneLine: "Builds a parameter-efficient two-level LLM agent through hierarchical SFT, offline actor-critic refinement, and optional offline-to-online adaptation.",
+    motivation: "Long-horizon LLM agents explore poorly and receive weak credit under sparse rewards; flat policies also mix task planning with primitive execution.",
+    modifications: [
+      "Let a high-level policy emit a textual subgoal every c steps and a low-level policy execute primitive actions conditioned on that subgoal.",
+      "Construct separate high-level task-reward transitions and low-level intrinsic-reward transitions from offline trajectories.",
+      "Share one frozen LLM backbone across levels and actor-critic heads, using hierarchy prompts and LoRA for parameter-efficient training.",
+      "Refine sentence-level Q/V critics with IQL-style losses and the token-level actor with AWAC advantage-weighted likelihood.",
+      "For online adaptation, freeze task-agnostic low-level skills and update only the high-level policy and critic."
+    ],
+    training: "Hierarchical behavior cloning, offline IQL/AWAC-style actor-critic refinement, then optional offline-to-online high-level adaptation.",
+    advantage: "Sentence-level A(s,u)=Q_phi(s,u)-V_psi(s) weights every token in the selected textual goal or action.",
+    objective: "AWAC-weighted token likelihood over high- and low-level offline transitions, initialized by hierarchical SFT.",
+    credit: "Subgoal-level extrinsic return and action-level intrinsic subtask-completion reward.",
+    feedback: "Environment reward for the high level; observation-derived binary subtask-completion reward for the low level.",
+    openSource: "Official code released.",
+    framework: "Official GLIDER repo; DeepSpeed, Hugging Face Transformers and LoRA; custom IQL/AWAC-style offline RL, not verl.",
+    pdf: "../agentic_rl/GLIDER/glider_divide_and_conquer_offline_hierarchical_rl.pdf",
+    source: "https://raw.githubusercontent.com/mlresearch/v267/main/assets/hu25q/hu25q.pdf",
+    code: "https://github.com/NJU-RL/GLIDER",
+    pipeline: [
+      ["Hierarchical data", "Split demonstrations into c-step high-level subgoal transitions and atomic low-level action transitions."],
+      ["Hierarchical SFT", "Behavior-clone both levels with concise-output length regularization."],
+      ["Sentence critic", "Fit Q and expectile V critics on reward-annotated offline transitions."],
+      ["Token actor", "Use sentence advantage as an AWAC exponential weight on autoregressive token likelihood."],
+      ["Offline-to-online", "Freeze transferable low-level skills and adapt the high-level policy with new interactions."]
+    ],
+    formulaParts: [
+      ["hierarchy", "g_t \\sim \\pi_\\theta^h(\\cdot\\mid d,o_t),\\qquad a_t \\sim \\pi_\\theta^l(\\cdot\\mid g_t,o_t)", "Planning runs at a coarse temporal scale while execution produces primitive actions."],
+      ["datasets", "D^h:(d;o_t,g_t,R_t,o_{t+c}),\\qquad D^l:(g_t;o_i,a_i,\\hat r_i,o_{i+1})", "Extrinsic task return supervises the planner; intrinsic completion reward supervises the executor."],
+      ["sft", "\\mathcal L_{\\mathrm{SFT}}=-\\mathbb E_{D^h}\\log\\pi_\\theta^h-\\mathbb E_{D^l}\\log\\pi_\\theta^l+\\lambda(n_h+n_l)", "Behavior cloning initializes both levels and penalizes unnecessarily long goals or actions."],
+      ["critic", "A(s,u)=Q_\\phi(s,u)-V_\\psi(s)", "The sentence-level critic scores a complete textual subgoal or action."],
+      ["actor", "\\mathcal L_\\pi=-\\mathbb E_{(s,u)\\sim D^r}\\!\\left[e^{A(s,u)/\\lambda}\\log\\pi_\\theta(u\\mid s)\\right]", "AWAC turns offline advantage into a weight on token-level maximum likelihood."]
+    ],
+    tags: ["ICML", "offline HRL", "IQL", "AWAC", "DeepSpeed", "LoRA", "ScienceWorld", "ALFWorld"]
+  },
+  {
     id: "turnppo",
     name: "Turn-PPO",
     year: 2025,
@@ -1097,7 +1143,7 @@ const methods = [
 const edges = [
   ["ppo", "vineppo"], ["ppo", "vcppo"], ["vcppo", "vapo"], ["dapo", "vapo"], ["grpo", "vapo"],
   ["ppo", "grpo"], ["grpo", "dapo"], ["grpo", "gspo"], ["grpo", "gmpo"], ["grpo", "gfpo"],
-  ["ppo", "turnppo"], ["grpo", "flowgrpo"], ["flowgrpo", "turnppo"], ["grpo", "gigpo"], ["turnppo", "gigpo"], ["gigpo", "hgpo"], ["hgpo", "hiper"], ["hgpo", "stephrl"], ["hiper", "stephrl"], ["stephrl", "hipif"], ["grpo", "hipif"], ["grpo", "arpo"], ["arpo", "aepo"], ["aepo", "appo"], ["hiper", "appo"], ["hipif", "appo"],
+  ["ppo", "turnppo"], ["grpo", "flowgrpo"], ["flowgrpo", "turnppo"], ["grpo", "gigpo"], ["turnppo", "gigpo"], ["gigpo", "hgpo"], ["grpo", "glider"], ["glider", "hiper"], ["glider", "stephrl"], ["hgpo", "hiper"], ["hgpo", "stephrl"], ["hiper", "stephrl"], ["stephrl", "hipif"], ["grpo", "hipif"], ["grpo", "arpo"], ["arpo", "aepo"], ["aepo", "appo"], ["hiper", "appo"], ["hipif", "appo"],
   ["opd", "opsd"], ["opd", "sdpo"], ["opd", "skillsd"], ["opsd", "skillsd"], ["grpo", "skillsd"], ["skillsd", "sdar"],
   ["opsd", "rlsd"], ["sdpo", "rlsd"], ["rlsd", "sdar"], ["rlsd", "serl"], ["sdar", "serl"], ["flowgrpo", "serl"], ["gigpo", "serl"], ["hgpo", "serl"]
 ];

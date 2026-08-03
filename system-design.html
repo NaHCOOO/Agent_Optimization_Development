@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="LLM Multi-Agent System Design：从 Agent 构件、团队选择、通信图、工作流与消息语义，到动态编排、可靠性和 MARL 联合优化。">
+    <meta property="og:title" content="LLM Multi-Agent System Design">
+    <meta property="og:description" content="A bilingual research atlas for the design and optimization of LLM multi-agent systems.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nahcooo.github.io/Agent_Optimization_Development/system-design.html">
+    <title>LLM Multi-Agent System Design | Agentic System Research Atlas</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+    <link rel="stylesheet" href="./styles.css?v=25">
+    <link rel="stylesheet" href="./mas.css?v=25">
+  </head>
+  <body class="mas-page">
+    <header class="topbar">
+      <a class="brand" href="./index.html#overview" aria-label="Agentic System Research Atlas">
+        <span class="brand-mark" aria-hidden="true">AS</span>
+        <span><strong>Agentic System</strong><small>Research Atlas</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#framework" data-ui="navFramework">研究框架</a>
+        <a href="#story" data-ui="navStory">发展主线</a>
+        <a href="#workbench" data-ui="navWorkbench">方法工作台</a>
+        <a href="#intersection" data-ui="navIntersection">交叉方向</a>
+        <a href="#timeline" data-ui="navTimeline">时间线</a>
+        <a href="#library" data-ui="navLibrary">论文库</a>
+      </nav>
+      <button class="language-toggle" id="mas-language-toggle" type="button" aria-label="Switch language">EN</button>
+    </header>
+
+    <main>
+      <section id="overview" class="overview section mas-overview" aria-labelledby="mas-overview-title">
+        <nav class="research-switch" aria-label="Agentic System research modules">
+          <a href="./index.html#overview"><span>01</span><b data-ui="moduleOptimization">LLM 训练与优化</b></a>
+          <a class="active" href="./system-design.html#overview" aria-current="page"><span>02</span><b data-ui="moduleSystem">Multi-Agent System 设计</b></a>
+        </nav>
+        <div class="overview-copy">
+          <div class="overview-heading">
+            <p class="eyebrow" data-ui="overviewEyebrow">Agentic System 的系统设计平面</p>
+            <h1 id="mas-overview-title" data-ui="overviewTitle">LLM Multi-Agent System Design</h1>
+          </div>
+          <p class="lead" data-ui="overviewLead">这一部分研究的不是怎样更新一个 LLM 的权重，而是怎样把多个 Agent、工具与环境组织成有效系统：选谁、怎样连接、何时执行、传什么、如何融合，以及运行时是否应改变结构。网页以 25 篇正式论文为核心，并把 workshop 与预印本前沿单独标注。</p>
+        </div>
+        <div class="overview-stats mas-stats" id="mas-stats"></div>
+        <div class="plane-contrast" id="plane-contrast"></div>
+      </section>
+
+      <section id="framework" class="section" aria-labelledby="framework-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="frameworkEyebrow">八个可决策层</p>
+            <h2 id="framework-title" data-ui="frameworkTitle">系统状态不是一张通信图</h2>
+          </div>
+          <p data-ui="frameworkLead">点击任一层，方法工作台会筛到直接优化这一层的论文。Topology 只回答“谁能交流”，Workflow 还要回答“何时、按什么顺序、如何停止”。</p>
+        </div>
+        <div class="system-equation" id="system-equation"></div>
+        <div class="layer-grid" id="layer-grid"></div>
+      </section>
+
+      <section id="story" class="section" aria-labelledby="mas-story-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="storyEyebrow">从固定团队到可学习系统</p>
+            <h2 id="mas-story-title" data-ui="storyTitle">七章发展主线</h2>
+          </div>
+          <p data-ui="storyLead">每一章对应一个设计变量的变化。论文按问题关系组织，不把“多 Agent”当作一个单独算法类别。</p>
+        </div>
+        <div class="route-river" id="route-river"></div>
+        <div class="mas-story-stack" id="mas-story-stack"></div>
+      </section>
+
+      <section id="workbench" class="section" aria-labelledby="mas-workbench-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="workbenchEyebrow">逐篇核对设计变量</p>
+            <h2 id="mas-workbench-title" data-ui="workbenchTitle">方法工作台</h2>
+          </div>
+          <p data-ui="workbenchLead">统一回答：优化什么、动态发生在哪一层、证据覆盖什么、哪些结论不能外推，以及复现使用什么 runtime。</p>
+        </div>
+        <div class="workbench-shell mas-workbench-shell">
+          <aside class="method-index" aria-label="Method index">
+            <label class="search-field">
+              <span data-ui="search">搜索方法</span>
+              <input id="mas-method-search" type="search" placeholder="MaAS / communication / MARL">
+            </label>
+            <div class="category-segments" id="mas-category-filter"></div>
+            <div class="method-list" id="mas-method-list"></div>
+          </aside>
+          <article class="reader mas-reader" id="mas-method-reader" aria-live="polite"></article>
+        </div>
+      </section>
+
+      <section id="intersection" class="section" aria-labelledby="intersection-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="intersectionEyebrow">两个并列方向的交集</p>
+            <h2 id="intersection-title" data-ui="intersectionTitle">系统参数 φ × 模型参数 θ</h2>
+          </div>
+          <p data-ui="intersectionLead">固定模型搜索系统、固定系统训练模型、交替优化和端到端联合优化，是四种不同问题。不能只写“联合优化”而不说明更新了哪组参数。</p>
+        </div>
+        <div class="joint-objective" id="joint-objective"></div>
+        <div class="intersection-grid" id="intersection-grid"></div>
+      </section>
+
+      <section id="timeline" class="section" aria-labelledby="mas-timeline-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="timelineEyebrow">正式版本优先</p>
+            <h2 id="mas-timeline-title" data-ui="timelineTitle">论文时间线</h2>
+          </div>
+          <p data-ui="timelineLead">月份按正式会议月份展示；Tier A 为主会 proceedings，Tier B 为已接收但 proceedings 尚未稳定发布的作者版本。</p>
+        </div>
+        <div class="mas-timeline" id="mas-timeline"></div>
+      </section>
+
+      <section id="library" class="section" aria-labelledby="mas-library-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow" data-ui="libraryEyebrow">原文、代码与实现底座</p>
+            <h2 id="mas-library-title" data-ui="libraryTitle">论文库与开源状态</h2>
+          </div>
+          <p data-ui="libraryLead">“框架”区分运行时和训练底座。多数系统设计工作使用定制 Python、MetaGPT、Hugging Face 或 vLLM，而不是 veRL。</p>
+        </div>
+        <div class="library-controls">
+          <label class="search-field library-search">
+            <span data-ui="filterLibrary">筛选论文库</span>
+            <input id="mas-library-search" type="search" placeholder="venue / framework / method">
+          </label>
+          <label class="check-control"><input id="mas-open-only" type="checkbox"><span data-ui="openOnly">仅看已开源</span></label>
+        </div>
+        <div class="paper-table-wrap">
+          <table class="paper-table mas-paper-table">
+            <thead id="mas-paper-head"></thead>
+            <tbody id="mas-paper-body"></tbody>
+          </table>
+        </div>
+        <div class="frontier-block">
+          <div class="frontier-heading">
+            <h3 data-ui="frontierTitle">前沿观察，不计入正式核心</h3>
+            <p data-ui="frontierLead">这些工作补足新问题，但证据等级必须与主会论文分开。</p>
+          </div>
+          <div class="frontier-list" id="frontier-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p data-ui="footer">基于正式论文逐篇核验。论文结论、研究者解读与尚未解决的问题在页面中分栏呈现。</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+    <script src="./mas-data.js?v=25"></script>
+    <script src="./mas-app.js?v=25"></script>
+  </body>
+</html>
