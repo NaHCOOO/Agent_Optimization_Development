@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="LLM Multi-Agent System Design：从 Agent 构件、团队选择、通信图、工作流与消息语义，到动态编排、可靠性和 MARL 联合优化。">
+    <meta name="description" content="LLM Multi-Agent System Design：围绕单 Agent、团队选择、协作流程、通信形式、信息处理、动态调整、MARL 联合优化与长程多轮 LLM 训练的八个核心问题。">
     <meta property="og:title" content="LLM Multi-Agent System Design">
     <meta property="og:description" content="A bilingual research atlas for the design and optimization of LLM multi-agent systems.">
     <meta property="og:type" content="website">
@@ -11,8 +11,8 @@
     <title>LLM Multi-Agent System Design | Agentic System Research Atlas</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
-    <link rel="stylesheet" href="./styles.css?v=25">
-    <link rel="stylesheet" href="./mas.css?v=25">
+    <link rel="stylesheet" href="./styles.css?v=26">
+    <link rel="stylesheet" href="./mas.css?v=26">
   </head>
   <body class="mas-page">
     <header class="topbar">
@@ -42,7 +42,7 @@
             <p class="eyebrow" data-ui="overviewEyebrow">Agentic System 的系统设计平面</p>
             <h1 id="mas-overview-title" data-ui="overviewTitle">LLM Multi-Agent System Design</h1>
           </div>
-          <p class="lead" data-ui="overviewLead">这一部分研究的不是怎样更新一个 LLM 的权重，而是怎样把多个 Agent、工具与环境组织成有效系统：选谁、怎样连接、何时执行、传什么、如何融合，以及运行时是否应改变结构。网页以 25 篇正式论文为核心，并把 workshop 与预印本前沿单独标注。</p>
+          <p class="lead" data-ui="overviewLead">这一部分围绕八个核心问题展开：从单个 Agent、团队选择、连接流程、通信形式与信息处理，到执行时动态调整；再通过 MARL 的参数联合优化和长程多轮 LLM 训练，与模型优化方向连接。网页以 25 篇正式论文为核心，并把 workshop 与预印本前沿单独标注。</p>
         </div>
         <div class="overview-stats mas-stats" id="mas-stats"></div>
         <div class="plane-contrast" id="plane-contrast"></div>
@@ -51,22 +51,22 @@
       <section id="framework" class="section" aria-labelledby="framework-title">
         <div class="section-heading split-heading">
           <div>
-            <p class="eyebrow" data-ui="frameworkEyebrow">八个可决策层</p>
-            <h2 id="framework-title" data-ui="frameworkTitle">系统状态不是一张通信图</h2>
+            <p class="eyebrow" data-ui="frameworkEyebrow">八个核心研究问题</p>
+            <h2 id="framework-title" data-ui="frameworkTitle">从 Agent 到联合优化的完整问题链</h2>
           </div>
-          <p data-ui="frameworkLead">点击任一层，方法工作台会筛到直接优化这一层的论文。Topology 只回答“谁能交流”，Workflow 还要回答“何时、按什么顺序、如何停止”。</p>
+          <p data-ui="frameworkLead">Q1–Q6 回答系统怎样设计，Q7 连接传统 MARL 的参数联合优化，Q8 回接并列的 LLM Optimization 模块。点击问题可进入对应方法；Q8 会打开模型训练页面。</p>
         </div>
-        <div class="system-equation" id="system-equation"></div>
-        <div class="layer-grid" id="layer-grid"></div>
+        <div class="question-groups" id="question-groups"></div>
+        <div class="question-grid" id="question-grid"></div>
       </section>
 
       <section id="story" class="section" aria-labelledby="mas-story-title">
         <div class="section-heading split-heading">
           <div>
-            <p class="eyebrow" data-ui="storyEyebrow">从固定团队到可学习系统</p>
-            <h2 id="mas-story-title" data-ui="storyTitle">七章发展主线</h2>
+            <p class="eyebrow" data-ui="storyEyebrow">按问题组织证据与演进</p>
+            <h2 id="mas-story-title" data-ui="storyTitle">八条核心研究主线</h2>
           </div>
-          <p data-ui="storyLead">每一章对应一个设计变量的变化。论文按问题关系组织，不把“多 Agent”当作一个单独算法类别。</p>
+          <p data-ui="storyLead">每条主线都先提出设计问题，再梳理方法如何迭代。可靠性、成本和安全是检验 Q1–Q6 的约束，不被单独包装成一个系统层。</p>
         </div>
         <div class="route-river" id="route-river"></div>
         <div class="mas-story-stack" id="mas-story-stack"></div>
@@ -96,10 +96,10 @@
       <section id="intersection" class="section" aria-labelledby="intersection-title">
         <div class="section-heading split-heading">
           <div>
-            <p class="eyebrow" data-ui="intersectionEyebrow">两个并列方向的交集</p>
+            <p class="eyebrow" data-ui="intersectionEyebrow">Q7 与 Q8 的交叉</p>
             <h2 id="intersection-title" data-ui="intersectionTitle">系统参数 φ × 模型参数 θ</h2>
           </div>
-          <p data-ui="intersectionLead">固定模型搜索系统、固定系统训练模型、交替优化和端到端联合优化，是四种不同问题。不能只写“联合优化”而不说明更新了哪组参数。</p>
+          <p data-ui="intersectionLead">Q7 追问多个 Agent 的参数如何共同学习，Q8 追问语言模型如何适应长程多轮环境。固定模型搜索系统、固定系统训练模型、交替优化与端到端联合优化必须分开讨论。</p>
         </div>
         <div class="joint-objective" id="joint-objective"></div>
         <div class="intersection-grid" id="intersection-grid"></div>
@@ -152,7 +152,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-    <script src="./mas-data.js?v=25"></script>
-    <script src="./mas-app.js?v=25"></script>
+    <script src="./mas-data.js?v=26"></script>
+    <script src="./mas-app.js?v=26"></script>
   </body>
 </html>

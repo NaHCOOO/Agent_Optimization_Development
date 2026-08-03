@@ -84,7 +84,6 @@
   font: 800 14px/1 "SFMono-Regular", Consolas, monospace;
 }
 
-.system-equation,
 .joint-objective {
   display: grid;
   min-height: 104px;
@@ -97,23 +96,69 @@
   overflow-x: auto;
 }
 
-.system-equation .katex,
 .joint-objective .katex {
   font-size: 1.25em;
 }
 
-.layer-grid {
+.question-groups {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(190px, 1fr) minmax(190px, 1fr);
+  margin-bottom: 16px;
+  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
+}
+
+.question-group {
+  min-height: 94px;
+  padding: 18px 20px;
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.question-group.system {
+  border-top: 4px solid var(--forest);
+  background: #f2f7f4;
+}
+
+.question-group.marl {
+  border-top: 4px solid #147d72;
+  background: #eff8f7;
+}
+
+.question-group.model {
+  border-top: 4px solid #7552a3;
+  background: #f7f3fb;
+}
+
+.question-group strong,
+.question-group span {
+  display: block;
+}
+
+.question-group strong {
+  margin-bottom: 7px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.question-group span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.question-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line-strong);
 }
 
-.layer-button {
+.question-card {
   position: relative;
   display: grid;
-  min-height: 150px;
-  grid-template-columns: 42px minmax(0, 1fr);
+  min-height: 208px;
+  grid-template-columns: 48px minmax(0, 1fr);
   gap: 14px;
   align-content: start;
   padding: 22px 18px;
@@ -123,51 +168,64 @@
   background: var(--paper);
   color: var(--text);
   text-align: left;
+  text-decoration: none;
 }
 
-.layer-button:hover,
-.layer-button:focus-visible,
-.layer-button.active {
-  background: color-mix(in srgb, var(--layer-color) 9%, white);
+.question-card:hover,
+.question-card:focus-visible,
+.question-card.active {
+  background: color-mix(in srgb, var(--question-color) 9%, white);
   outline: none;
 }
 
-.layer-button.active::after {
+.question-card.active::after {
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: var(--layer-color);
+  background: var(--question-color);
   content: "";
 }
 
-.layer-symbol {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border: 1px solid var(--layer-color);
-  border-radius: 5px;
-  color: var(--layer-color);
-  font: 800 17px/1 "SFMono-Regular", Consolas, monospace;
+.question-card.model {
+  background: #fbf9fd;
 }
 
-.layer-button strong {
+.question-number {
+  display: grid;
+  width: 46px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--question-color);
+  border-radius: 5px;
+  color: var(--question-color);
+  font: 800 14px/1 "SFMono-Regular", Consolas, monospace;
+}
+
+.question-copy strong {
   display: block;
   margin: 1px 0 7px;
   color: var(--ink);
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
-.layer-button small {
+.question-copy small {
   display: block;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.6;
 }
 
+.question-copy b {
+  display: block;
+  margin-top: 14px;
+  color: var(--question-color);
+  font-size: 11px;
+}
+
 .route-river {
   display: grid;
-  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  grid-template-columns: repeat(8, minmax(170px, 1fr));
   margin-bottom: 20px;
   border: 1px solid var(--line-strong);
   background: var(--paper);
@@ -261,6 +319,17 @@
   color: var(--route-color);
   font-size: 11px;
   font-weight: 800;
+}
+
+.story-method-links a {
+  padding: 5px 8px;
+  border: 1px solid var(--route-color);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--route-color) 8%, white);
+  color: var(--route-color);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .mas-story-claim {
@@ -571,9 +640,13 @@ button.timeline-paper {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .layer-grid,
+  .question-grid,
   .intersection-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .question-groups {
+    grid-template-columns: 2fr 1fr 1fr;
   }
 
   .mas-year-papers {
@@ -596,6 +669,10 @@ button.timeline-paper {
   }
 
   .plane-contrast {
+    grid-template-columns: 1fr;
+  }
+
+  .question-groups {
     grid-template-columns: 1fr;
   }
 
@@ -638,14 +715,14 @@ button.timeline-paper {
   }
 
   .mas-stats,
-  .layer-grid,
+  .question-grid,
   .intersection-grid,
   .frontier-list {
     grid-template-columns: 1fr;
   }
 
-  .layer-button {
-    min-height: 116px;
+  .question-card {
+    min-height: 154px;
   }
 
   .mas-story-item {
