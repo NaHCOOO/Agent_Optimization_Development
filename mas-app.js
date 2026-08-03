@@ -16,6 +16,7 @@
       overviewEyebrow:"Agentic System 的系统设计平面", overviewTitle:"LLM Multi-Agent System Design", overviewLead:"这一部分围绕八个核心问题展开：从单个 Agent、团队选择、连接流程、通信形式与信息处理，到执行时动态调整；再通过 MARL 的参数联合优化和长程多轮 LLM 训练，与模型优化方向连接。网页以 25 篇正式论文为核心，并把 workshop 与预印本前沿单独标注。",
       frameworkEyebrow:"八个核心研究问题", frameworkTitle:"从 Agent 到联合优化的完整问题链", frameworkLead:"Q1–Q6 回答系统怎样设计，Q7 连接传统 MARL 的参数联合优化，Q8 回接并列的 LLM Optimization 模块。点击问题可进入对应方法；Q8 会打开模型训练页面。",
       storyEyebrow:"按问题组织证据与演进", storyTitle:"八条核心研究主线", storyLead:"每条主线都先提出设计问题，再梳理方法如何迭代。可靠性、成本和安全是检验 Q1–Q6 的约束，不被单独包装成一个系统层。",
+      storyMapTitle:"方法演进与跨问题关系", storyMapHint:"横轴为正式版本时间；实线表示同一核心问题内的推进，虚线表示跨问题的机制迁移或汇合。关系边表达研究脉络，不等于直接引用。", storyMapRoute:"问题内演进", storyMapFusion:"跨问题连接", storyMapScroll:"可横向滚动查看完整演化路径", storyMapBridge:"进入训练与优化模块",
       workbenchEyebrow:"逐篇核对设计变量", workbenchTitle:"方法工作台", workbenchLead:"统一回答：优化什么、动态发生在哪一层、证据覆盖什么、哪些结论不能外推，以及复现使用什么 runtime。",
       intersectionEyebrow:"Q7 与 Q8 的交叉", intersectionTitle:"系统参数 φ × 模型参数 θ", intersectionLead:"Q7 追问多个 Agent 的参数如何共同学习，Q8 追问语言模型如何适应长程多轮环境。固定模型搜索系统、固定系统训练模型、交替优化与端到端联合优化必须分开讨论。",
       timelineEyebrow:"正式版本优先", timelineTitle:"论文时间线", timelineLead:"月份按正式会议月份展示；Tier A 为主会 proceedings，Tier B 为已接收但 proceedings 尚未稳定发布的作者版本。",
@@ -34,6 +35,7 @@
       overviewEyebrow:"The system-design plane of Agentic Systems", overviewTitle:"LLM Multi-Agent System Design", overviewLead:"This module is organized around eight core questions: single-Agent design, team selection, topology and workflow, communication medium, information processing, runtime adaptation, MARL parameter-level joint optimization, and training LLMs for long-horizon multi-turn systems. The core contains 25 formal papers, with workshop and preprint frontiers labeled separately.",
       frameworkEyebrow:"Eight core research questions", frameworkTitle:"A complete question chain from Agents to joint optimization", frameworkLead:"Q1–Q6 cover system design, Q7 bridges parameter-level optimization from traditional MARL, and Q8 connects to the parallel LLM Optimization module. Select a question to inspect its methods; Q8 opens model training.",
       storyEyebrow:"Evidence and evolution by question", storyTitle:"Eight core research routes", storyLead:"Each route begins with a design question and traces how methods evolve. Reliability, cost, and safety constrain Q1–Q6 rather than forming an extra system layer.",
+      storyMapTitle:"Method evolution and cross-question relationships", storyMapHint:"The x-axis marks formal publication time. Solid links show progress within one core question; dashed links show mechanism transfer or convergence across questions. Edges indicate research lineage, not necessarily direct citation.", storyMapRoute:"Within-question evolution", storyMapFusion:"Cross-question connection", storyMapScroll:"Scroll horizontally to inspect the full evolution path", storyMapBridge:"Open Training & Optimization",
       workbenchEyebrow:"Audit each design variable", workbenchTitle:"Method Workbench", workbenchLead:"Each paper is aligned by what it optimizes, where adaptation happens, what the evidence covers, what does not transfer, and which runtime supports reproduction.",
       intersectionEyebrow:"The Q7–Q8 intersection", intersectionTitle:"System parameters φ × model parameters θ", intersectionLead:"Q7 asks how multiple Agent parameters learn together; Q8 asks how language models adapt to long-horizon multi-turn environments. Fixed-model system search, fixed-system model training, alternating optimization, and end-to-end joint optimization must remain distinct.",
       timelineEyebrow:"Formal versions first", timelineTitle:"Paper Timeline", timelineLead:"Months show the formal conference month. Tier A is main-conference proceedings; Tier B is an accepted author version while proceedings are not yet stable.",
@@ -119,10 +121,101 @@
     }));
   }
 
+  function renderStoryMap() {
+    const width = 1810;
+    const height = 1300;
+    const lanes = [
+      { id:"agent", question:0, y:90, offsets:[-28,28], height:120 },
+      { id:"team", question:1, y:240, offsets:[-54,0,54], height:180 },
+      { id:"workflow", question:2, y:430, offsets:[-81,-27,27,81], height:200 },
+      { id:"medium", question:3, y:620, offsets:[-54,0,54], height:180 },
+      { id:"information", question:4, y:820, offsets:[-81,-27,27,81], height:220 },
+      { id:"adaptation", question:5, y:970, offsets:[0], height:80 },
+      { id:"marl", question:6, y:1120, offsets:[-54,0,54], height:220 },
+      { id:"model", question:7, y:1260, offsets:[0], height:60 }
+    ];
+    const laneById = new Map(lanes.map(lane => [lane.id, lane]));
+    const yearBands = {
+      2016:{x:180,width:55}, 2017:{x:270,width:55}, 2018:{x:360,width:55}, 2019:{x:450,width:70},
+      2022:{x:600,width:75}, 2023:{x:725,width:85}, 2024:{x:865,width:235},
+      2025:{x:1135,width:430}, 2026:{x:1585,width:135}
+    };
+    const positionFor = method => {
+      const band = yearBands[method.year];
+      return band.x + ((method.month - 1) / 11) * band.width;
+    };
+    const positions = new Map();
+    lanes.filter(lane => lane.id !== "model").forEach(lane => {
+      const trackLastX = lane.offsets.map(() => -Infinity);
+      data.methods.filter(method => method.category === lane.id)
+        .sort((a,b) => positionFor(a) - positionFor(b) || a.name.localeCompare(b.name))
+        .forEach(method => {
+          const x = positionFor(method);
+          let track = trackLastX.findIndex(lastX => x - lastX >= 118);
+          if (track < 0) track = trackLastX.indexOf(Math.min(...trackLastX));
+          trackLastX[track] = x;
+          positions.set(method.id, { x, y:lane.y + lane.offsets[track], lane:lane.id });
+        });
+    });
+    positions.set("optimization", { x:1740, y:laneById.get("model").y, lane:"model" });
+
+    const edgeMarkup = data.relationshipEdges.map(([from,to]) => {
+      const source = positions.get(from);
+      const target = positions.get(to);
+      if (!source || !target) return "";
+      const crossQuestion = source.lane !== target.lane;
+      const controlX = source.x + Math.max(45, (target.x - source.x) * 0.48);
+      const path = `M ${source.x} ${source.y} C ${controlX} ${source.y}, ${controlX} ${target.y}, ${target.x} ${target.y}`;
+      return `<path class="story-map-edge ${crossQuestion ? "fusion" : "route"}" data-edge-from="${from}" data-edge-to="${to}" d="${path}" marker-end="url(#mas-story-arrow)"></path>`;
+    }).join("");
+
+    const laneMarkup = lanes.map((lane,index) => {
+      const question = data.questions[lane.question];
+      const itemColor = question.category ? color(question.category) : "#7552a3";
+      const label = lane.id === "model" ? "LLM Optimization" : catLabel(lane.id);
+      return `
+        <rect class="story-map-lane-bg" x="0" y="${lane.y - lane.height / 2}" width="${width}" height="${lane.height}" data-lane-index="${index}"></rect>
+        <line class="story-map-lane-line" x1="154" y1="${lane.y}" x2="1780" y2="${lane.y}"></line>
+        <circle cx="27" cy="${lane.y - 8}" r="4" fill="${itemColor}"></circle>
+        <text class="story-map-lane-index" x="39" y="${lane.y - 3}">${question.n}</text>
+        <text class="story-map-lane-label" x="27" y="${lane.y + 17}">${escapeHtml(label)}</text>`;
+    }).join("");
+
+    const yearMarkup = Object.entries(yearBands).map(([year,band]) => `
+      <line class="story-map-year-line" x1="${band.x}" y1="31" x2="${band.x}" y2="1290"></line>
+      <text class="story-map-year-label" x="${band.x}" y="27">${year}</text>`).join("");
+
+    const nodeMarkup = data.methods.map(method => {
+      const position = positions.get(method.id);
+      if (!position) return "";
+      return `<button type="button" class="story-map-node ${selectedId === method.id ? "active" : ""}" data-method-link="${method.id}" style="--node-x:${position.x}px;--node-y:${position.y}px;--lane-color:${color(method.category)}"><strong>${method.name}</strong><span>${method.year}.${String(method.month).padStart(2,"0")}</span></button>`;
+    }).join("");
+
+    const map = document.getElementById("mas-story-map");
+    map.setAttribute("aria-label", t("storyMapTitle"));
+    map.innerHTML = `
+      <svg class="story-map-svg" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+        <defs><marker id="mas-story-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z"></path></marker></defs>
+        ${laneMarkup}${yearMarkup}<g class="story-map-edges">${edgeMarkup}</g>
+      </svg>
+      ${nodeMarkup}
+      <a class="story-map-node mas-bridge-node" href="./index.html#story" style="--node-x:1740px;--node-y:${laneById.get("model").y}px;--lane-color:#7552a3"><strong>${t("storyMapBridge")}</strong><span>Q8</span></a>`;
+    renderStoryMapSelection();
+  }
+
+  function renderStoryMapSelection() {
+    document.querySelectorAll("#mas-story-map [data-method-link]").forEach(node => node.classList.toggle("active", node.dataset.methodLink === selectedId));
+    document.querySelectorAll("#mas-story-map .story-map-edge").forEach(edge => {
+      const related = edge.dataset.edgeFrom === selectedId || edge.dataset.edgeTo === selectedId;
+      edge.classList.toggle("active", related);
+      edge.classList.toggle("muted", !related);
+    });
+  }
+
   function renderStory() {
     const stories = data.stories[lang];
     const storyColors = data.questions.map(question => question.category ? color(question.category) : "#7552a3");
-    document.getElementById("route-river").innerHTML = stories.map((story,index) => `<div class="river-stage" style="--stage-color:${storyColors[index]}"><span>${story.n}</span><strong>${escapeHtml(story.title)}</strong><b></b></div>`).join("");
+    renderStoryMap();
     document.getElementById("mas-story-stack").innerHTML = stories.map((story,index) => {
       const routeColor = storyColors[index];
       const methodLinks = story.methods.map(id => data.methods.find(m => m.id === id)).filter(Boolean).map(m => `<button data-method-link="${m.id}">${m.name}</button>`).join("");
@@ -159,7 +252,7 @@
     category = selected.category;
     methodQuery = "";
     document.getElementById("mas-method-search").value = "";
-    renderFramework(); renderFilters(); renderMethodList(); renderTimeline();
+    renderFramework(); renderFilters(); renderMethodList(); renderTimeline(); renderStoryMapSelection();
     if (scroll) document.getElementById("workbench").scrollIntoView({ behavior:"smooth", block:"start" });
   }
 

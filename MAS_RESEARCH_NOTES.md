@@ -26,6 +26,10 @@ max_{theta, phi} E[R(trajectory)] - lambda * Cost(trajectory)
 
 Q1-Q6 define the system-design module. Q7 is the bridge to traditional MARL. Q8 links to the parallel LLM Optimization module. Reliability, cost, and safety are evaluation constraints across Q1-Q6 rather than a separate system layer.
 
+## Relationship-map policy
+
+The website places the 25 core papers on Q1-Q7 swimlanes and uses a separate Q8 bridge node for the parallel LLM Optimization module. Solid edges indicate conceptual progression within one research question; dashed edges indicate mechanism transfer or convergence across questions. These edges summarize the research lineage established by the comparative reading and must not be interpreted as direct citation claims unless a paper explicitly states that relationship.
+
 ## Core corpus by workbench category
 
 | Route | Papers |

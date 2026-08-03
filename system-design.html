@@ -11,8 +11,8 @@
     <title>LLM Multi-Agent System Design | Agentic System Research Atlas</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
-    <link rel="stylesheet" href="./styles.css?v=26">
-    <link rel="stylesheet" href="./mas.css?v=26">
+    <link rel="stylesheet" href="./styles.css?v=27">
+    <link rel="stylesheet" href="./mas.css?v=27">
   </head>
   <body class="mas-page">
     <header class="topbar">
@@ -68,7 +68,22 @@
           </div>
           <p data-ui="storyLead">每条主线都先提出设计问题，再梳理方法如何迭代。可靠性、成本和安全是检验 Q1–Q6 的约束，不被单独包装成一个系统层。</p>
         </div>
-        <div class="route-river" id="route-river"></div>
+        <div class="story-map-shell mas-story-map-shell">
+          <div class="story-map-toolbar">
+            <div>
+              <h3 data-ui="storyMapTitle">方法演进与跨问题关系</h3>
+              <p data-ui="storyMapHint">横轴为正式版本时间；实线表示同一核心问题内的推进，虚线表示跨问题的机制迁移或汇合。关系边表达研究脉络，不等于直接引用。</p>
+            </div>
+            <div class="story-map-key" aria-label="Relationship legend">
+              <span><i class="route-line"></i><b data-ui="storyMapRoute">问题内演进</b></span>
+              <span><i class="fusion-line"></i><b data-ui="storyMapFusion">跨问题连接</b></span>
+            </div>
+          </div>
+          <div class="story-map-scroll">
+            <div class="story-map mas-story-map" id="mas-story-map"></div>
+          </div>
+          <p class="story-map-scroll-hint" data-ui="storyMapScroll">可横向滚动查看完整演化路径</p>
+        </div>
         <div class="mas-story-stack" id="mas-story-stack"></div>
       </section>
 
@@ -152,7 +167,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-    <script src="./mas-data.js?v=26"></script>
-    <script src="./mas-app.js?v=26"></script>
+    <script src="./mas-data.js?v=27"></script>
+    <script src="./mas-app.js?v=27"></script>
   </body>
 </html>

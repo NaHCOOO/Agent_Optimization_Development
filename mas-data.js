@@ -40,6 +40,17 @@ window.masResearch = {
       { n: "Q8", title: "How can LLMs be trained for Agentic Systems and long-horizon multi-turn tasks?", claim: "This question belongs to the parallel LLM Optimization module: from stable PPO / GRPO updates through turn-level credit, multi-turn optimization, and HRL to OPD, self-distillation, and OPD + RL. System design defines the training distribution, while trained models change the best team and workflow.", methods: [], bridge: "./index.html#story" }
     ]
   },
+  relationshipEdges: [
+    ["react", "metagpt"], ["react", "chatdev"], ["metagpt", "adas"], ["chatdev", "adas"],
+    ["metagpt", "dylan"], ["dylan", "maas"], ["dylan", "foa"],
+    ["metagpt", "gptswarm"], ["gptswarm", "aflow"], ["gptswarm", "agentprune"], ["gptswarm", "flow"],
+    ["dial", "tarmac"], ["dial", "langground"], ["tarmac", "masia"], ["masia", "reconcile"],
+    ["langground", "latentmas"], ["reconcile", "latentmas"],
+    ["mad", "resilience"], ["mad", "mast"], ["resilience", "mast"],
+    ["dylan", "evolving"], ["maas", "evolving"], ["foa", "evolving"], ["flow", "evolving"],
+    ["maddpg", "mappo"], ["qmix", "mappo"], ["mappo", "maporl"], ["langground", "maporl"], ["reconcile", "maporl"],
+    ["adas", "optimization"], ["maas", "optimization"], ["evolving", "optimization"], ["maporl", "optimization"]
+  ],
   frontier: [
     { name: "G-Designer", venue: "ICLR 2025 FM-Wild Workshop", status: "workshop", source: "https://openreview.net/forum?id=Jov79pGXc6", zh: "用 VAE/GNN 生成 task-aware 通信拓扑；不是 ICLR 主会论文。", en: "Uses a VAE/GNN to generate task-aware communication topologies; not an ICLR main-conference paper." },
     { name: "RADAR", venue: "arXiv 2026", status: "preprint", source: "https://arxiv.org/abs/2605.09907", zh: "以 redundancy-aware diffusion 生成 query-adaptive 图；当前仍按预印本处理。", en: "Generates query-adaptive graphs with redundancy-aware diffusion; currently treated as a preprint." }

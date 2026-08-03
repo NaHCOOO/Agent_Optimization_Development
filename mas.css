@@ -223,6 +223,34 @@
   font-size: 11px;
 }
 
+.mas-story-map-shell {
+  margin-bottom: 30px;
+}
+
+.mas-story-map {
+  width: 1810px;
+  height: 1300px;
+}
+
+.mas-story-map .story-map-lane-bg[data-lane-index="5"],
+.mas-story-map .story-map-lane-bg[data-lane-index="7"] {
+  fill: #f7f9f8;
+}
+
+.mas-story-map .story-map-node {
+  width: 110px;
+}
+
+.mas-story-map .mas-bridge-node {
+  width: 154px;
+  text-decoration: none;
+}
+
+.mas-story-map .mas-bridge-node strong {
+  text-overflow: clip;
+  white-space: normal;
+}
+
 .route-river {
   display: grid;
   grid-template-columns: repeat(8, minmax(170px, 1fr));
