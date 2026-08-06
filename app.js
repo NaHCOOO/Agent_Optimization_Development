@@ -1137,6 +1137,279 @@ const methods = [
       ["direction", "task reward + feedback weight", "Reward decides direction; feedback decides placement and strength."]
     ],
     tags: ["hindsight", "multi-turn", "ALFWorld", "WebShop"]
+  },
+  {
+    id: "t3",
+    name: "T³",
+    year: 2026,
+    month: 4,
+    venue: "ICLR 2026 Oral",
+    paperTitle: "Reducing Belief Deviation in Reinforcement Learning for Active Reasoning of LLM Agents",
+    category: "multi",
+    branch: "belief-trap truncation",
+    oneLine: "Detects stalled epistemic progress and truncates belief-trapped rollout tails before they corrupt earlier credit.",
+    motivation: "In active reasoning, a long uninformative tail can dominate GAE and reverse the advantage of useful exploratory actions in the prefix.",
+    modifications: [
+      "Model active reasoning as a POMDP and characterize absorbing belief-trap regions.",
+      "Use task-observable hypothesis-refinement proxies to detect sustained progress stalls.",
+      "Truncate the trajectory at the detected trap while leaving PPO, GRPO, or GSPO unchanged."
+    ],
+    training: "A drop-in rollout wrapper for on-policy multi-turn RL; the base policy optimizer remains unchanged.",
+    advantage: "The base PPO/GRPO/GSPO advantage, computed on the retained informative prefix.",
+    objective: "Base policy objective on tau_{<=t*}, where t* is the first sustained epistemic-stall time.",
+    credit: "Trajectory-prefix preservation rather than explicit fine-grained redistribution.",
+    feedback: "Task-specific progress proxies derived from environment observations or hypothesis contraction.",
+    openSource: "Official implementation released.",
+    framework: "Official fork of veRL with PPO/GRPO/GSPO training, Ray and vLLM.",
+    pdf: "../agentic_rl/T3/t3_reducing_belief_deviation_iclr2026.pdf",
+    source: "https://openreview.net/pdf?id=r8hzDA3pUY",
+    code: "https://github.com/unimpor/T3",
+    pipeline: [
+      ["Active rollout", "Interact with the partially observed environment and update the working belief."],
+      ["Progress proxy", "Measure whether the remaining hypothesis space continues to contract."],
+      ["Trap detector", "Trigger after progress stays below a threshold for k turns."],
+      ["Prefix update", "Discard the uninformative tail and optimize the retained prefix with the base RL algorithm."]
+    ],
+    formulaParts: [
+      ["stall", "d(H_\\tau,H_{\\tau+1})\\le\\Delta_{min}", "A task-level proxy reports insufficient epistemic refinement."],
+      ["window", "\\forall\\tau\\in[t-k,t)", "The signal must persist across a window rather than one noisy step."],
+      ["wrapper", "\\tau\\to\\tau_{\\le t^*}", "Truncation changes rollout data, not the underlying PPO/GRPO objective."]
+    ],
+    tags: ["belief deviation", "early truncation", "active reasoning", "veRL"]
+  },
+  {
+    id: "arew",
+    name: "AREW",
+    year: 2026,
+    month: 7,
+    venue: "ICML 2026",
+    paperTitle: "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM Agents",
+    category: "multi",
+    branch: "directional credit reweighting",
+    oneLine: "Breaks information self-locking by reallocating advantage between positively and negatively critiqued action-selection and belief-tracking steps.",
+    motivation: "Weak action selection deprives belief tracking of evidence, while weak belief tracking hides the value of informative actions, locking outcome-based RL into a low-information regime.",
+    modifications: [
+      "Decompose active reasoning into Action Selection (AS) and Belief Tracking (BT) rounds.",
+      "Label each round with cheap directional critiques in {-1, 0, +1} rather than calibrated process rewards.",
+      "Convert critiques into zero-sum intra-trajectory coefficients and add them to the base advantage."
+    ],
+    training: "PPO-style on-policy RL with a lightweight advantage-reweighting term; no new critic target or reward model is required.",
+    advantage: "A_t^{AREW}=A_t+lambda u_t, with positive and negative coefficients centered within each trajectory.",
+    objective: "J_RL + lambda E_tau[L_margin(tau)] over AS and BT decision segments.",
+    credit: "Action-selection and belief-update segment level.",
+    feedback: "Directional critiques inferred from environment information gain and truth-aligned belief changes.",
+    openSource: "Official implementation released with T³.",
+    framework: "Official veRL fork; PPO entry point with AS/BT advantage modifiers.",
+    pdf: "../agentic_rl/AREW/arew_information_self_locking_icml2026.pdf",
+    source: "https://openreview.net/pdf/4c1d599593fcf2b3821e8aea66de529eadc101d6.pdf",
+    code: "https://github.com/unimpor/T3",
+    pipeline: [
+      ["Split decisions", "Separate environment-facing Action Selection from evidence-integrating Belief Tracking."],
+      ["Directional critique", "Assign positive, negative, or neutral labels from easy environment signals."],
+      ["Center weights", "Normalize positive and negative steps so their coefficients sum to zero."],
+      ["Reweight advantage", "Add the local coefficient to the outcome advantage and run the normal actor update."]
+    ],
+    formulaParts: [
+      ["margin", "\\widehat L=\\frac1{|P|}\\sum_{t\\in P}\\log\\pi_t-\\frac1{|N|}\\sum_{t\\in N}\\log\\pi_t", "Increase probability on positively critiqued decisions relative to negative ones."],
+      ["centering", "\\sum_t u_t=0", "The auxiliary signal reallocates credit instead of uniformly shifting the trajectory."],
+      ["reweight", "\\widehat A_t=A_t+\\lambda u_t", "The intervention plugs into existing policy-gradient machinery."]
+    ],
+    tags: ["information self-locking", "advantage reweighting", "belief tracking", "veRL"]
+  },
+  {
+    id: "supo",
+    name: "SUPO",
+    year: 2026,
+    month: 7,
+    venue: "ACL 2026",
+    paperTitle: "Beyond the Context Window: Scaling Agentic RL via End-to-end Optimized Context Compression",
+    category: "multi",
+    branch: "learned context compression",
+    oneLine: "Treats periodic summaries as policy actions so tool use and context compression are optimized jointly beyond the working context limit.",
+    motivation: "Long-horizon rollouts hit fixed context limits, while heuristic summarization can discard task-critical evidence and cannot improve with the policy.",
+    modifications: [
+      "Split one rollout into summary-delimited trajectory segments under a compact working context.",
+      "Backpropagate the rollout-group advantage through both tool/reasoning tokens and summary tokens.",
+      "Mask rollouts that fail to answer before the step or summary budget to prevent summary-pattern collapse."
+    ],
+    training: "GRPO-style end-to-end policy optimization over tool actions and model-generated summaries.",
+    advantage: "One rollout-group relative advantage shared by every segment and summary in the rollout.",
+    objective: "Clipped token policy objective across all summary-delimited segments, normalized over valid rollout tokens.",
+    credit: "Rollout reward shared across tool/reasoning and summarization segments.",
+    feedback: "Final task reward plus an overlong validity mask.",
+    openSource: "No official code repository confirmed.",
+    framework: "Designed to fit veRL-style GRPO infrastructure; the paper does not release an implementation.",
+    pdf: "../agentic_rl/SUPO/supo_context_compression_acl2026.pdf",
+    source: "https://aclanthology.org/2026.acl-long.966.pdf",
+    code: "",
+    pipeline: [
+      ["Tool-use segment", "Reason and call tools until the working context reaches threshold L."],
+      ["Summary action", "Generate a task-conditioned summary and reset the active context."],
+      ["Rollout grouping", "Keep all segments linked to the same final task outcome."],
+      ["Joint update", "Train reasoning, tool use and summaries with rollout-group advantage and overlong masking."]
+    ],
+    formulaParts: [
+      ["segments", "\\tau=\\{\\tau_i\\}_{i=1}^{I+1}", "Summaries partition one long rollout into infrastructure-compatible trajectories."],
+      ["advantage", "\\hat A_j=(R_j-\\mu_{\\mathcal G})/\\sigma_{\\mathcal G}", "Every segment from the same rollout shares one group-relative signal."],
+      ["mask", "\\mathbf 1[T_j\\le H, I_j\\le S]", "Invalid overlong rollouts do not push the policy away from summarization."]
+    ],
+    tags: ["context compression", "summarization", "GRPO", "long horizon"]
+  },
+  {
+    id: "karl",
+    name: "KARL",
+    year: 2026,
+    month: 7,
+    venue: "ACL 2026",
+    paperTitle: "KARL: Reinforcement Learning for LLM Agents on Multi-Turn Knowledge-Intensive Agentic Tasks",
+    category: "multi",
+    branch: "knowledge exploration reward",
+    oneLine: "Jointly trains tool use and proactive structured-knowledge exploration with curiosity-shaped GRPO in asynchronous multi-turn environments.",
+    motivation: "Binary task rewards do not teach an agent when or what external knowledge to acquire during a long tool-use trajectory.",
+    modifications: [
+      "Expose task-specific knowledge graphs or database schemas as dynamically explorable sources.",
+      "Multiply task and format return by a curiosity factor derived from knowledge novelty.",
+      "Decouple rollout generation and policy optimization in an asynchronous multi-task architecture."
+    ],
+    training: "Online asynchronous multi-turn GRPO with entropy/KL regularization and curiosity-shaped trajectory rewards.",
+    advantage: "GRPO group advantage computed from curiosity-modulated task return.",
+    objective: "GRPO actor loss using R(tau)=lambda_explore(tau) min(R_task+R_format, r_limit).",
+    credit: "Trajectory-level reward broadcast; curiosity improves exploration but is not step-local credit.",
+    feedback: "Task/subgoal success, invalid-action penalties and knowledge-novelty signals.",
+    openSource: "Official full training and environment code released.",
+    framework: "KARL code is built on veRL with asynchronous rollout, FSDP2 and AgentBench-style environment workers.",
+    pdf: "../agentic_rl/KARL/karl_knowledge_augmented_rl_acl2026.pdf",
+    source: "https://aclanthology.org/2026.acl-long.2196.pdf",
+    code: "https://github.com/THUDM/KARL",
+    pipeline: [
+      ["Knowledge source", "Construct task-relevant KG descriptions or database specifications."],
+      ["Dynamic exploration", "Let the policy decide when and what structured knowledge to query."],
+      ["Curiosity return", "Combine novelty, task/subgoal completion and format penalties."],
+      ["Async GRPO", "Train from distributed multi-turn sessions while rollout workers continue collecting data."]
+    ],
+    formulaParts: [
+      ["return", "R(\\tau)=\\lambda_{explore}(\\tau)\\min(R_{task}+R_{format},r_{limit})", "Exploration quality modulates the capped task return."],
+      ["task", "R_{task}=w_f\\mathbf1[success]+\\sum_jw_j\\mathbf1[subgoal_j]", "Final and intermediate task completion remain the primary objective."],
+      ["curiosity", "\\lambda_{explore}=f(V_{explore}(\\tau;K))", "Knowledge novelty supplies the exploration incentive."]
+    ],
+    tags: ["curiosity", "knowledge graph", "database", "veRL", "asynchronous"]
+  },
+  {
+    id: "agemem",
+    name: "AgeMem",
+    year: 2026,
+    month: 7,
+    venue: "ACL 2026 Highlight",
+    paperTitle: "Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents",
+    category: "multi",
+    branch: "learned memory control",
+    oneLine: "Makes long-term and short-term memory operations policy actions and trains them through a three-stage progressive GRPO curriculum.",
+    motivation: "Heuristic memory pipelines separate storage, retrieval and context compression, so early memory decisions are weakly coupled to delayed task outcomes.",
+    modifications: [
+      "Add six policy actions for LTM add/update/delete and STM retrieve/summary/filter.",
+      "Train a three-stage trajectory covering information storage, distractor pressure and integrated task execution.",
+      "Use composite task, context and memory rewards under a step-wise GRPO implementation."
+    ],
+    training: "Progressive three-stage RFT with GRPO over a shared language-and-memory action policy.",
+    advantage: "Group-normalized terminal advantage broadcast to every memory and reasoning step.",
+    objective: "GRPO surrogate over step experiences with task, context-management and memory-quality return.",
+    credit: "Step records receive the same terminal group advantage; the implementation links stages but does not distinguish each step's causal effect.",
+    feedback: "LLM-judged task score, context efficiency/preservation, memory quality and operation penalties.",
+    openSource: "Official training and standalone agent code released.",
+    framework: "Trinity-RFT for training and AgentScope for the agent/tool layer.",
+    pdf: "../agentic_rl/AgeMem/agemem_agentic_memory_acl2026.pdf",
+    source: "https://aclanthology.org/2026.acl-long.981.pdf",
+    code: "https://github.com/y1y5/AgeMem",
+    pipeline: [
+      ["LTM construction", "Learn which facts to add, update or delete during early interactions."],
+      ["STM pressure", "Inject distractors and learn when to filter or summarize active context."],
+      ["Integrated task", "Retrieve persistent memory and solve the delayed downstream query."],
+      ["Progressive GRPO", "Optimize language and all memory tools under one composite terminal return."]
+    ],
+    formulaParts: [
+      ["state", "s_t=(C_t,M_t,\\mathcal T)", "The policy observes active context, persistent memory and task specification."],
+      ["return", "R(\\tau)=w^\\top[R_{task},R_{context},R_{memory}]+P_{penalty}", "Task success is balanced with context and memory quality."],
+      ["broadcast", "A_t=A_T=(R-\\mu_{\\mathcal G})/(\\sigma_{\\mathcal G}+\\epsilon)", "All stages are linked, but every step still receives one trajectory-level signal."]
+    ],
+    tags: ["memory", "Trinity-RFT", "AgentScope", "GRPO", "long horizon"]
+  },
+  {
+    id: "spear",
+    name: "SPEAR",
+    year: 2026,
+    month: 4,
+    venue: "ICLR 2026",
+    paperTitle: "Learn the Ropes, Then Trust the Wins: Self-imitation with Progressive Exploration for Agentic Reinforcement Learning",
+    category: "opdrl",
+    branch: "self-imitation + RL",
+    oneLine: "Balances long-horizon exploration and exploitation by warming up positive replay while decaying tool-call intrinsic reward.",
+    motivation: "Naive entropy maximization destabilizes multi-turn RL, while immediate self-imitation overfits the few early successes and collapses exploration.",
+    modifications: [
+      "Store positive trajectories in a FIFO replay buffer and recalibrate their off-policy advantages against a moving median baseline.",
+      "Warm up the self-imitation objective while gradually removing tool-call intrinsic reward.",
+      "Mask high covariance tokens and combine the recipe with GRPO, GiGPO or Dr.BoT."
+    ],
+    training: "On-policy agent RL plus scheduled off-policy self-imitation and intrinsic reward shaping.",
+    advantage: "Current group advantage plus replay advantage R_i-P50(D_R), filtered to positive trajectories.",
+    objective: "J_total=J_GRPO+gamma J_SIL, with a separately decayed intrinsic tool-use reward.",
+    credit: "Trajectory/token replay weighting; successful past paths guide action-level exploration.",
+    feedback: "Outcome reward, valid tool-call count, formatting and self-generated successful trajectories.",
+    openSource: "Official code and checkpoints released.",
+    framework: "veRL for reasoning; veRL-Agent and vLLM for ALFWorld/WebShop rollouts.",
+    pdf: "../agentic_rl/SPEAR/spear_self_imitation_progressive_exploration_iclr2026.pdf",
+    source: "https://openreview.net/pdf?id=Kssko33Ekq",
+    code: "https://github.com/TencentYoutuResearch/SPEAR",
+    pipeline: [
+      ["Explore early", "Use a decaying tool-call bonus to acquire interaction skills and populate experience."],
+      ["Store wins", "Keep trajectories with positive online and recalibrated replay advantages."],
+      ["Warm imitation", "Increase replay weight only after the policy has acquired broader environment exposure."],
+      ["Entropy guard", "Remove high covariance tokens that would drive aggressive over-confidence."]
+    ],
+    formulaParts: [
+      ["replay", "\\widetilde A_i=R_i-P_{50}(D_R)", "A moving median filters stale off-policy successes without new rollouts."],
+      ["schedule", "J=J_{GRPO}+\\gamma(t)J_{SIL}", "Self-imitation strengthens gradually instead of dominating early exploration."],
+      ["intrinsic", "R=R_{outcome}+\\mu(t)R_{tool}+R_{format}", "Tool-use reward decays as task competence grows."]
+    ],
+    tags: ["self-imitation", "experience replay", "veRL-Agent", "curriculum"]
+  },
+  {
+    id: "eapo",
+    name: "EAPO",
+    year: 2026,
+    month: 7,
+    venue: "ICML 2026",
+    paperTitle: "EAPO: Enhancing Policy Optimization with On-Demand Expert Assistance",
+    category: "opdrl",
+    branch: "expert-assisted RL",
+    oneLine: "Adds expert consultation as a training-only policy action and anneals access so expert-guided trajectories are internalized into an autonomous model.",
+    motivation: "Outcome-only exploration rarely reaches successful long reasoning trajectories, while static expert workflows and SFT distillation do not optimize when help is actually useful.",
+    modifications: [
+      "Let the policy decide whether, how and how many experts to consult at each training turn.",
+      "Write expert replies into the rollout history so standard end-to-end reward trains consultation and subsequent reasoning jointly.",
+      "Anneal expert-response acceptance and episode budget until evaluation requires fully independent reasoning."
+    ],
+    training: "Outcome-based online RL with training-only multi-expert actions and a curriculum that removes assistance.",
+    advantage: "Outcome advantage over full expert-assisted or self-resolved trajectories; no explicit distillation divergence.",
+    objective: "max_theta E_{H_T~pi_theta}[R(E(H_T),g)] with annealed expert-response availability.",
+    credit: "Trajectory-level reward over reasoning and consultation decisions.",
+    feedback: "Verifiable final-answer reward plus expert responses embedded in on-policy context.",
+    openSource: "No official training repository confirmed.",
+    framework: "Main RL framework is not disclosed; experts are served through vLLM with Ulysses/tensor parallelism.",
+    pdf: "../agentic_rl/EAPO/eapo_expert_assisted_policy_optimization_icml2026.pdf",
+    source: "https://openreview.net/pdf?id=luykjYIvEs",
+    code: "",
+    pipeline: [
+      ["Private reasoning", "The policy attempts the task and decides whether assistance is needed."],
+      ["On-demand experts", "Query one or more stronger models and append their responses to history."],
+      ["Outcome update", "Use final verifiable reward to train consultation and reasoning jointly."],
+      ["Remove assistance", "Anneal accepted expert replies and turn budget until the policy solves independently."]
+    ],
+    formulaParts: [
+      ["action", "\\alpha_t\\in\\{reason,consult,answer\\}", "Expert access is part of the policy action space during training."],
+      ["objective", "J=\\mathbb E_{H_T\\sim\\pi_\\theta}[R(E(H_T),g)]", "No separate KD loss is required; knowledge enters through on-policy context."],
+      ["anneal", "\\rho_s=s^{-1}", "The probability of accepting expert responses decays to promote autonomy."]
+    ],
+    tags: ["expert assistance", "curriculum", "vLLM", "implicit distillation"]
   }
 ];
 
@@ -1145,7 +1418,9 @@ const edges = [
   ["ppo", "grpo"], ["grpo", "dapo"], ["grpo", "gspo"], ["grpo", "gmpo"], ["grpo", "gfpo"],
   ["ppo", "turnppo"], ["grpo", "flowgrpo"], ["flowgrpo", "turnppo"], ["grpo", "gigpo"], ["turnppo", "gigpo"], ["gigpo", "hgpo"], ["grpo", "glider"], ["glider", "hiper"], ["glider", "stephrl"], ["hgpo", "hiper"], ["hgpo", "stephrl"], ["hiper", "stephrl"], ["stephrl", "hipif"], ["grpo", "hipif"], ["grpo", "arpo"], ["arpo", "aepo"], ["aepo", "appo"], ["hiper", "appo"], ["hipif", "appo"],
   ["opd", "opsd"], ["opd", "sdpo"], ["opd", "skillsd"], ["opsd", "skillsd"], ["grpo", "skillsd"], ["skillsd", "sdar"],
-  ["opsd", "rlsd"], ["sdpo", "rlsd"], ["rlsd", "sdar"], ["rlsd", "serl"], ["sdar", "serl"], ["flowgrpo", "serl"], ["gigpo", "serl"], ["hgpo", "serl"]
+  ["opsd", "rlsd"], ["sdpo", "rlsd"], ["rlsd", "sdar"], ["rlsd", "serl"], ["sdar", "serl"], ["flowgrpo", "serl"], ["gigpo", "serl"], ["hgpo", "serl"],
+  ["turnppo", "t3"], ["t3", "arew"], ["flowgrpo", "supo"], ["supo", "agemem"], ["flowgrpo", "karl"],
+  ["arpo", "spear"], ["grpo", "spear"], ["opd", "eapo"], ["spear", "eapo"]
 ];
 
 const compareFields = [

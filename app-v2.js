@@ -4,7 +4,7 @@ const copy = {
   zh: {
     navStory: "研究主线", navWorkbench: "方法工作台", navCompare: "对比实验室", navTimeline: "时间线", navLibrary: "论文库", moduleOptimization: "LLM 训练与优化", moduleSystem: "Multi-Agent System 设计",
     overviewEyebrow: "LLM Agent 长程多轮优化方法发展图谱", overviewTitle: "Agent Optimization Development",
-    overviewLead: "聚焦 LLM Agent 的长程多轮优化：真正变化的不是一个 loss，而是训练信号如何穿过长轨迹。本图谱围绕三个问题组织 27 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。",
+    overviewLead: "聚焦 LLM Agent 的长程多轮优化：真正变化的不是一个 loss，而是训练信号如何穿过长轨迹。本图谱围绕三个问题组织 34 篇论文：baseline 从哪里来，最终结果怎样归因到中间决策，以及稀疏 reward 如何与 dense teacher feedback 协同。",
     storyEyebrow: "从算法列表到问题演化", storyTitle: "五章研究故事线", storyLead: "每一章都从上一条路线留下的结构性问题出发。点击方法，进入统一的深读工作台。",
     storyMapTitle: "方法演化与关系", storyMapHint: "横轴为首次公开时间；实线表示路线内迭代，虚线表示跨路线融合。点击节点可进入方法深读。", storyMapRoute: "路线内迭代", storyMapFusion: "跨路线融合", storyMapScroll: "可横向滚动查看完整演化路径",
     workbenchEyebrow: "逐篇深读", workbenchTitle: "方法工作台", workbenchLead: "统一拆成：研究判断、机制、公式、训练信号、证据、边界与实现。",
@@ -26,7 +26,7 @@ const copy = {
   en: {
     navStory: "Research story", navWorkbench: "Method workbench", navCompare: "Comparison lab", navTimeline: "Timeline", navLibrary: "Paper library", moduleOptimization: "LLM Training & Optimization", moduleSystem: "Multi-Agent System Design",
     overviewEyebrow: "Development atlas for long-horizon LLM agent optimization", overviewTitle: "Agent Optimization Development",
-    overviewLead: "For long-horizon, multi-turn LLM agents, the real change is not one loss but how training signal travels through a trajectory. This atlas organizes 27 papers around three questions: where the baseline comes from, how outcomes are assigned to intermediate decisions, and how sparse reward works with dense teacher feedback.",
+    overviewLead: "For long-horizon, multi-turn LLM agents, the real change is not one loss but how training signal travels through a trajectory. This atlas organizes 34 papers around three questions: where the baseline comes from, how outcomes are assigned to intermediate decisions, and how sparse reward works with dense teacher feedback.",
     storyEyebrow: "From paper list to problem evolution", storyTitle: "A five-chapter research story", storyLead: "Each chapter starts from a structural limitation left by the previous route. Select any method to open the reading workbench.",
     storyMapTitle: "Method evolution and relationships", storyMapHint: "The x-axis marks first public release. Solid links show within-route iteration; dashed links show cross-route fusion. Select a node for the full reading.", storyMapRoute: "Within-route iteration", storyMapFusion: "Cross-route fusion", storyMapScroll: "Scroll horizontally to inspect the full evolution path",
     workbenchEyebrow: "Paper-by-paper reading", workbenchTitle: "Method workbench", workbenchLead: "A consistent view of claim, mechanism, formula, signal, evidence, boundary and implementation.",
@@ -61,7 +61,9 @@ const storyMapEdges = [
   ["grpo", "arpo"], ["arpo", "aepo"], ["aepo", "appo"],
   ["grpo", "glider"], ["glider", "hiper"], ["glider", "stephrl"], ["hiper", "stephrl"], ["stephrl", "hipif"], ["grpo", "hipif"], ["hipif", "appo"],
   ["opd", "opsd"], ["opd", "skillsd"], ["opd", "sdpo"], ["opsd", "rlsd"],
-  ["grpo", "skillsd"], ["skillsd", "sdar"], ["rlsd", "sdar"], ["sdar", "serl"], ["flowgrpo", "serl"]
+  ["grpo", "skillsd"], ["skillsd", "sdar"], ["rlsd", "sdar"], ["sdar", "serl"], ["flowgrpo", "serl"],
+  ["turnppo", "t3"], ["t3", "arew"], ["flowgrpo", "supo"], ["supo", "agemem"], ["flowgrpo", "karl"],
+  ["arpo", "spear"], ["grpo", "spear"], ["opd", "eapo"], ["spear", "eapo"]
 ];
 const storyMapColors = {
   value: "#3367a8", group: "#2d8a68", multi: "#c47718", hierarchy: "#b45443", opd: "#7552a3"
@@ -215,21 +217,21 @@ function renderStoryMap() {
   const chapterByMethod = new Map();
   chapters.forEach((chapter) => chapter.methods.forEach((id) => chapterByMethod.set(id, chapter.id)));
 
-  const width = 1320;
-  const height = 760;
+  const width = 1680;
+  const height = 1120;
   const laneLayout = {
     value: { y: 90, offsets: [-24, 24], height: 112 },
     group: { y: 215, offsets: [-48, 0, 48], height: 138 },
-    multi: { y: 360, offsets: [-48, 0, 48], height: 138 },
-    hierarchy: { y: 485, offsets: [-24, 24], height: 112 },
-    opd: { y: 640, offsets: [-72, -24, 24, 72], height: 190 }
+    multi: { y: 450, offsets: [-130, -78, -26, 26, 78, 130], height: 300 },
+    hierarchy: { y: 702, offsets: [-52, 0, 52], height: 170 },
+    opd: { y: 950, offsets: [-130, -78, -26, 26, 78, 130], height: 300 }
   };
   const yearBands = {
     2017: { x: 174, width: 96 },
     2023: { x: 300, width: 110 },
     2024: { x: 440, width: 180 },
     2025: { x: 650, width: 350 },
-    2026: { x: 990, width: 600 }
+    2026: { x: 1010, width: 590 }
   };
   const positionFor = (method) => {
     const band = yearBands[method.year];
@@ -267,14 +269,14 @@ function renderStoryMap() {
     const y = layout.y;
     return `
       <rect class="story-map-lane-bg" x="0" y="${y - layout.height / 2}" width="${width}" height="${layout.height}" data-lane-index="${index}"></rect>
-      <line class="story-map-lane-line" x1="154" y1="${y}" x2="1290" y2="${y}"></line>
+      <line class="story-map-lane-line" x1="154" y1="${y}" x2="1650" y2="${y}"></line>
       <circle cx="27" cy="${y - 8}" r="4" fill="${storyMapColors[chapter.id]}"></circle>
       <text class="story-map-lane-index" x="39" y="${y - 3}">${chapter.index}</text>
       <text class="story-map-lane-label" x="27" y="${y + 17}">${escapeHtml(chapter.title.replace(/^第[^：:]+[：:]\s*/, ""))}</text>`;
   }).join("");
 
   const yearMarkup = Object.entries(yearBands).map(([year, band]) => `
-    <line class="story-map-year-line" x1="${band.x}" y1="31" x2="${band.x}" y2="746"></line>
+    <line class="story-map-year-line" x1="${band.x}" y1="31" x2="${band.x}" y2="1108"></line>
     <text class="story-map-year-label" x="${band.x}" y="29">${year}</text>
   `).join("");
 

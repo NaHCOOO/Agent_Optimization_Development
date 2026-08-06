@@ -1692,6 +1692,202 @@ window.llmI18n = {
             "奖励决定方向，反馈决定位置和强度。"
           ]
         ]
+      },
+      "t3": {
+        "branch": "belief trap 截断",
+        "oneLine": "检测 epistemic progress 的持续停滞，并在无信息的轨迹尾部破坏前缀归因之前将其截断。",
+        "motivation": "在 active reasoning 中，冗长且无信息的尾部会主导 GAE，甚至反转前缀中有效探索动作的 advantage。",
+        "modifications": [
+          "将 active reasoning 建模为 POMDP，并刻画具有吸收性的 belief trap 区域。",
+          "使用任务可观测的假设收缩指标，检测持续的推理进展停滞。",
+          "在检测到 trap 时截断轨迹，同时保持 PPO、GRPO 或 GSPO 的目标不变。"
+        ],
+        "training": "面向 on-policy 多轮 RL 的 rollout wrapper；底层 policy optimizer 不变。",
+        "advantage": "在保留的有效轨迹前缀上计算原有 PPO、GRPO 或 GSPO advantage。",
+        "objective": "只在检测到持续停滞之前的有效轨迹前缀上执行原有 policy objective。",
+        "credit": "通过保留有效前缀来防止归因污染，而非显式重分配细粒度 credit。",
+        "feedback": "由环境观测或假设空间收缩构造的任务相关 progress proxy。",
+        "openSource": "官方实现已开源。",
+        "framework": "官方 veRL fork，支持 PPO、GRPO、GSPO，并使用 Ray 与 vLLM。",
+        "pipeline": [
+          ["Active rollout", "与部分可观测环境交互并更新当前 belief。"],
+          ["Progress proxy", "衡量剩余假设空间是否继续收缩。"],
+          ["Trap detector", "进展连续多轮低于阈值时触发。"],
+          ["Prefix update", "丢弃无信息尾部，并用原有 RL 算法优化保留的前缀。"]
+        ],
+        "formulaParts": [
+          ["停滞", "d(H_\\tau,H_{\\tau+1})\\le\\Delta_{min}", "任务级 proxy 表明 epistemic refinement 不足。"],
+          ["窗口", "\\forall\\tau\\in[t-k,t)", "信号必须持续一个窗口，而不是由单步噪声触发。"],
+          ["截断", "\\tau\\to\\tau_{\\le t^*}", "改变的是 rollout 数据，而不是 PPO/GRPO 目标本身。"]
+        ]
+      },
+      "arew": {
+        "branch": "方向性 credit reweighting",
+        "oneLine": "在获得正向与负向 critique 的 Action Selection 和 Belief Tracking 步骤之间重新分配 advantage，打破 information self-locking。",
+        "motivation": "较弱的 Action Selection 无法为 Belief Tracking 提供证据，而较弱的 Belief Tracking 又掩盖信息动作的价值，使 outcome-based RL 锁在低信息状态。",
+        "modifications": [
+          "把 active reasoning 分解为 Action Selection 和 Belief Tracking 两类决策。",
+          "使用正向、负向和中性三类方向性 critique，而不要求校准后的 process reward。",
+          "把 critique 转成轨迹内零和系数，并加到原有 advantage 上。"
+        ],
+        "training": "PPO-style on-policy RL 加轻量 advantage reweighting；不需要新的 critic target 或 reward model。",
+        "advantage": "在原有 outcome advantage 上加入轨迹内中心化的方向性系数。",
+        "objective": "在原有 RL 目标之外，增加区分正向与负向决策段的 margin 项。",
+        "credit": "Action Selection 与 Belief Tracking 决策段级别。",
+        "feedback": "由环境 information gain 与真实 belief 变化推断的方向性 critique。",
+        "openSource": "与 T³ 共用的官方实现已开源。",
+        "framework": "官方 veRL fork；PPO 入口中加入 Action Selection/Belief Tracking advantage modifier。",
+        "pipeline": [
+          ["决策拆分", "区分面向环境的 Action Selection 与整合证据的 Belief Tracking。"],
+          ["方向性 critique", "根据低成本环境信号标记正向、负向或中性决策。"],
+          ["系数中心化", "归一化正负步骤，使辅助系数之和为零。"],
+          ["Advantage reweighting", "把局部系数加入 outcome advantage，再执行常规 actor 更新。"]
+        ],
+        "formulaParts": [
+          ["间隔", "\\widehat L=|P|^{-1}\\sum_{t\\in P}\\log\\pi_t-|N|^{-1}\\sum_{t\\in N}\\log\\pi_t", "相对负向决策，提高正向决策的概率。"],
+          ["中心化", "\\sum_t u_t=0", "辅助信号重新分配 credit，而不是整体平移轨迹。"],
+          ["重加权", "\\widehat A_t=A_t+\\lambda u_t", "可直接接入已有 policy gradient。"]
+        ]
+      },
+      "supo": {
+        "branch": "可学习的 context compression",
+        "oneLine": "把周期性 summary 作为 policy action，使工具使用与 context compression 能在工作窗口之外联合优化。",
+        "motivation": "长程 rollout 会触及固定 context limit，而启发式 summary 可能丢失关键证据，也无法随 policy 一起改进。",
+        "modifications": [
+          "在紧凑工作上下文中，把一条 rollout 切分成由 summary 分隔的多个 segment。",
+          "让 rollout-group advantage 同时作用于工具/推理 token 与 summary token。",
+          "屏蔽超过步骤或 summary 预算仍未作答的 rollout，防止 summary pattern collapse。"
+        ],
+        "training": "在工具动作和模型生成 summary 上执行 GRPO-style 端到端 policy optimization。",
+        "advantage": "同一 rollout 中所有 segment 与 summary 共享一个 rollout-group relative advantage。",
+        "objective": "对所有 summary-delimited segment 使用 clipped token policy objective，并按有效 rollout token 归一化。",
+        "credit": "最终 rollout reward 在工具/推理与 summary segment 间共享。",
+        "feedback": "最终任务 reward 与 overlong validity mask。",
+        "openSource": "未确认官方代码仓库。",
+        "framework": "论文说明可接入 veRL-style GRPO infrastructure，但未发布实现。",
+        "pipeline": [
+          ["工具交互段", "推理并调用工具，直到工作上下文达到设定阈值。"],
+          ["Summary action", "生成面向任务的 summary，并重置 active context。"],
+          ["Rollout grouping", "让所有 segment 继续对应同一个最终任务结果。"],
+          ["联合更新", "用 rollout-group advantage 与 overlong mask 训练推理、工具和 summary。"]
+        ],
+        "formulaParts": [
+          ["分段", "\\tau=\\{\\tau_i\\}_{i=1}^{I+1}", "summary 把一条长 rollout 切成基础设施可处理的轨迹段。"],
+          ["优势", "\\hat A_j=(R_j-\\mu_{\\mathcal G})/\\sigma_{\\mathcal G}", "同一 rollout 的所有 segment 共享组内相对信号。"],
+          ["屏蔽", "\\mathbf1[T_j\\le H,I_j\\le S]", "无效的超长 rollout 不会把 policy 推离 summary。"]
+        ]
+      },
+      "karl": {
+        "branch": "知识探索 reward",
+        "oneLine": "在异步多轮环境中，用 curiosity-shaped GRPO 联合训练工具使用与主动的结构化知识探索。",
+        "motivation": "二元任务 reward 无法告诉 Agent 在长程工具轨迹中何时需要外部知识，以及应该获取什么知识。",
+        "modifications": [
+          "把任务相关知识图谱或数据库 schema 暴露为可动态探索的知识源。",
+          "用知识 novelty 构造 curiosity factor，调制任务与格式 return。",
+          "通过异步多任务架构解耦 rollout generation 与 policy optimization。"
+        ],
+        "training": "Online asynchronous multi-turn GRPO，并加入 entropy/KL regularization 与 curiosity-shaped trajectory reward。",
+        "advantage": "根据 curiosity 调制后的任务 return 计算 GRPO group advantage。",
+        "objective": "GRPO actor loss 使用由知识探索质量调制并经过上限截断的任务 return。",
+        "credit": "仍是 trajectory reward broadcast；curiosity 改善探索，但不提供 step-local credit。",
+        "feedback": "任务/子目标成功、非法动作惩罚和知识 novelty 信号。",
+        "openSource": "完整训练与环境代码已由官方开源。",
+        "framework": "基于 veRL，使用 asynchronous rollout、FSDP2 与 AgentBench-style environment worker。",
+        "pipeline": [
+          ["知识源", "构建任务相关的知识图谱描述或数据库 specification。"],
+          ["动态探索", "由 policy 决定何时查询以及查询哪些结构化知识。"],
+          ["Curiosity return", "组合 novelty、任务/子目标完成度与格式惩罚。"],
+          ["Async GRPO", "rollout worker 持续收集数据，同时从分布式多轮 session 训练。"]
+        ],
+        "formulaParts": [
+          ["回报", "R(\\tau)=\\lambda_{explore}(\\tau)\\min(R_{task}+R_{format},r_{limit})", "探索质量调制截断后的任务 return。"],
+          ["任务", "R_{task}=w_f\\mathbf1[success]+\\sum_jw_j\\mathbf1[subgoal_j]", "最终任务和中间子目标仍是主要优化目标。"],
+          ["好奇心", "\\lambda_{explore}=f(V_{explore}(\\tau;K))", "知识 novelty 提供探索激励。"]
+        ]
+      },
+      "agemem": {
+        "branch": "可学习的 memory control",
+        "oneLine": "把长期与短期 memory operation 变成 policy action，并通过三阶段 progressive GRPO curriculum 训练。",
+        "motivation": "启发式 memory pipeline 把存储、检索和 context compression 分离，使早期 memory 决策难以与延迟任务结果建立联系。",
+        "modifications": [
+          "加入 LTM add/update/delete 与 STM retrieve/summary/filter 六种 policy action。",
+          "构造涵盖信息存储、干扰压力和综合任务执行的三阶段 trajectory。",
+          "在 step-wise GRPO 实现中组合任务、context 与 memory reward。"
+        ],
+        "training": "对共享 language-and-memory action policy 执行三阶段 progressive RFT 与 GRPO。",
+        "advantage": "组内归一化的 terminal advantage 被广播到每个 memory 与 reasoning step。",
+        "objective": "在 step experience 上执行 GRPO surrogate，return 由任务、context management 与 memory quality 组成。",
+        "credit": "各 step record 接收相同 terminal group advantage；阶段被串联，但每一步的因果贡献仍未区分。",
+        "feedback": "由 LLM judge 给出的任务得分、context efficiency/preservation、memory quality 与 operation penalty。",
+        "openSource": "官方训练代码与 standalone agent 已开源。",
+        "framework": "训练使用 Trinity-RFT，Agent/tool 层使用 AgentScope。",
+        "pipeline": [
+          ["LTM 构建", "学习在早期交互中应该 add、update 或 delete 哪些事实。"],
+          ["STM 压力", "注入干扰信息，学习何时 filter 或 summary active context。"],
+          ["综合任务", "检索 persistent memory，并回答延迟的下游问题。"],
+          ["Progressive GRPO", "在一个 composite terminal return 下联合优化语言与所有 memory tool。"]
+        ],
+        "formulaParts": [
+          ["状态", "s_t=(C_t,M_t,\\mathcal T)", "policy 观察 active context、persistent memory 与任务 specification。"],
+          ["回报", "R(\\tau)=\\mathbf w^\\top[R_{task},R_{context},R_{memory}]+P_{penalty}", "在任务成功、context 与 memory quality 之间权衡。"],
+          ["广播", "A_t=A_T=(R-\\mu_{\\mathcal G})/(\\sigma_{\\mathcal G}+\\epsilon)", "阶段被连通，但每一步仍共享 trajectory-level 信号。"]
+        ]
+      },
+      "spear": {
+        "branch": "self-imitation + RL",
+        "oneLine": "通过逐步增强 positive replay，同时衰减 tool-call intrinsic reward，平衡长程探索与利用。",
+        "motivation": "直接最大化 entropy 会让多轮 RL 不稳定，而过早 self-imitation 会过拟合少量早期成功轨迹并导致探索坍缩。",
+        "modifications": [
+          "把成功轨迹存入 FIFO replay buffer，并用移动 median baseline 重新校准 off-policy advantage。",
+          "逐步提高 self-imitation objective 权重，同时逐步移除 tool-call intrinsic reward。",
+          "屏蔽高 covariance token，并可与 GRPO、GiGPO 或 Dr.BoT 组合。"
+        ],
+        "training": "On-policy Agent RL 加 scheduled off-policy self-imitation 与 intrinsic reward shaping。",
+        "advantage": "当前 group advantage 与相对移动中位数计算的 replay advantage 联合使用，且只保留正向轨迹。",
+        "objective": "在 GRPO 上叠加逐步增强的 self-imitation loss，同时单独衰减工具使用的 intrinsic reward。",
+        "credit": "Trajectory/token replay weighting；过去的成功路径引导 action-level exploration。",
+        "feedback": "结果 reward、有效 tool-call 数、格式信号与自生成成功轨迹。",
+        "openSource": "官方代码与 checkpoint 已开源。",
+        "framework": "推理训练使用 veRL；ALFWorld/WebShop rollout 使用 veRL-Agent 与 vLLM。",
+        "pipeline": [
+          ["早期探索", "用逐步衰减的 tool-call bonus 学习交互技能并积累经验。"],
+          ["保存成功轨迹", "保留 online 与重新校准后的 replay advantage 均为正的轨迹。"],
+          ["渐进模仿", "在 policy 获得更广环境经验后，再逐步增强 replay 权重。"],
+          ["Entropy guard", "移除会推动过度自信的高 covariance token。"]
+        ],
+        "formulaParts": [
+          ["回放", "\\widetilde A_i=R_i-P_{50}(D_R)", "移动 median 可在不增加 rollout 的情况下过滤过时成功样本。"],
+          ["调度", "J=J_{GRPO}+\\gamma(t)J_{SIL}", "self-imitation 逐步增强，避免过早压制探索。"],
+          ["内在奖励", "R=R_{outcome}+\\mu(t)R_{tool}+R_{format}", "随着任务能力提升，工具使用 reward 逐步衰减。"]
+        ]
+      },
+      "eapo": {
+        "branch": "expert-assisted RL",
+        "oneLine": "把 expert consultation 加入训练期 policy action，并逐步减少专家可用性，使专家引导被内化为自主能力。",
+        "motivation": "仅靠 outcome 探索很难到达成功的长推理轨迹，而固定 expert workflow 和 SFT distillation 也没有学习何时真正需要帮助。",
+        "modifications": [
+          "让 policy 在每个训练 turn 决定是否咨询专家、如何咨询以及咨询多少位专家。",
+          "把专家回答写入 rollout history，使标准端到端 reward 联合训练咨询与后续推理。",
+          "逐步降低专家回答接受率和 episode budget，直到评测时完全独立推理。"
+        ],
+        "training": "Outcome-based online RL，加仅在训练期可用的 multi-expert action 与逐步移除帮助的 curriculum。",
+        "advantage": "对完整 expert-assisted 或自主完成轨迹计算 outcome advantage；没有显式 distillation divergence。",
+        "objective": "在专家回答可用性逐步衰减时，最大化完整 expert-assisted 或自主轨迹的期望结果 reward。",
+        "credit": "对推理与 consultation decision 使用 trajectory-level reward。",
+        "feedback": "可验证最终答案 reward，以及作为 on-policy context 注入的专家回答。",
+        "openSource": "未确认官方训练代码仓库。",
+        "framework": "主 RL framework 未披露；expert server 使用 vLLM，并采用 Ulysses/tensor parallelism。",
+        "pipeline": [
+          ["自主尝试", "policy 先推理，并判断是否需要外部帮助。"],
+          ["按需专家", "查询一个或多个更强模型，并把回答追加到 history。"],
+          ["结果更新", "使用最终可验证 reward 联合训练咨询与推理。"],
+          ["移除帮助", "逐步减少被接受的专家回复和 turn budget，直到 policy 独立完成。"]
+        ],
+        "formulaParts": [
+          ["动作", "\\alpha_t\\in\\{reason,consult,answer\\}", "训练期间，专家访问属于 policy action space。"],
+          ["目标", "J=\\mathbb E_{H_T\\sim\\pi_\\theta}[R(E(H_T),g)]", "不需要单独的 KD loss；知识通过 on-policy context 进入。"],
+          ["退火", "\\rho_s=s^{-1}", "专家回答的接受概率随训练衰减，促使 policy 自主完成。"]
+        ]
       }
     }
   }

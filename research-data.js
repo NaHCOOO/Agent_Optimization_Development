@@ -23,8 +23,8 @@ window.RESEARCH_DATA = {
         index: "03",
         title: "从整条轨迹广播，走向结构化 credit",
         thesis: "多轮环境里，同一个最终奖励不该无差别写回所有 turn、action 和 token。真正的问题是：在哪里分叉、以什么状态比较、由哪一层承担责任。",
-        bridge: "Flow-GRPO 是粗粒度起点；GiGPO/HGPO 细化 state/context；Turn-PPO 回到 learned value；ARPO/AEPO/APPO 把探索预算与过程节点纳入归因。",
-        methods: ["flowgrpo", "gigpo", "hgpo", "turnppo", "arpo", "aepo", "appo"]
+        bridge: "Flow-GRPO 是粗粒度起点；GiGPO/HGPO 细化 state/context；Turn-PPO 回到 learned value；T³/AREW 处理 belief 与信息 credit；SUPO、KARL、AgeMem 再把 context、knowledge、memory 纳入端到端优化。",
+        methods: ["flowgrpo", "gigpo", "hgpo", "turnppo", "arpo", "aepo", "appo", "t3", "arew", "supo", "karl", "agemem"]
       },
       {
         id: "hierarchy",
@@ -39,16 +39,16 @@ window.RESEARCH_DATA = {
         index: "05",
         title: "稀疏 reward 之外，引入 dense teacher signal",
         thesis: "On-policy distillation 的关键不是复制 teacher 答案，而是在 student 自己会访问的错误前缀上提供 token-level 修正。与 RL 结合时，必须明确谁决定方向、谁只调节强度。",
-        bridge: "OPD/OPSD 建立分布匹配；Skill-SD、SDPO、RLSD、SDAR 与 SERL 分别用 skill、feedback、reward anchor、gate 和 selective anchor 控制蒸馏。",
-        methods: ["opd", "opsd", "skillsd", "sdpo", "rlsd", "sdar", "serl"]
+        bridge: "OPD/OPSD 建立分布匹配；Skill-SD、SDPO、RLSD、SDAR 与 SERL 控制 dense signal；SPEAR 用成功轨迹自模仿，EAPO 则把外部专家作为训练期 action。",
+        methods: ["opd", "opsd", "skillsd", "sdpo", "rlsd", "sdar", "serl", "spear", "eapo"]
       }
     ],
     en: [
       { id: "value", index: "01", title: "Make advantage estimation trustworthy", thesis: "PPO's bottleneck in long sequences is often the critic-return-advantage pipeline rather than clipping itself.", bridge: "VinePPO estimates value with continuations; VC-PPO and VAPO repair critic initialization, decay and length bias.", methods: ["ppo", "vineppo", "vcppo", "vapo"] },
       { id: "group", index: "02", title: "Removing the critic moves risk into the group", thesis: "GRPO saves the value model but makes group composition, granularity, length bias and sample utility determine the gradient.", bridge: "DAPO repairs the recipe, GSPO/GMPO the aggregation unit, and GFPO the update distribution.", methods: ["grpo", "dapo", "gspo", "gmpo", "gfpo"] },
-      { id: "multi", index: "03", title: "From trajectory broadcast to structured credit", thesis: "One final reward should not be copied indiscriminately to every turn, action and token in a multi-turn environment.", bridge: "Flow-GRPO is the coarse baseline; GiGPO/HGPO refine state and context; Turn-PPO restores learned values; ARPO/AEPO/APPO connect exploration and procedural credit.", methods: ["flowgrpo", "gigpo", "hgpo", "turnppo", "arpo", "aepo", "appo"] },
+      { id: "multi", index: "03", title: "From trajectory broadcast to structured credit", thesis: "One final reward should not be copied indiscriminately to every turn, action and token in a multi-turn environment.", bridge: "GiGPO/HGPO and Turn-PPO refine credit; T³/AREW repair belief and information signals; SUPO, KARL and AgeMem jointly optimize context, knowledge and memory control.", methods: ["flowgrpo", "gigpo", "hgpo", "turnppo", "arpo", "aepo", "appo", "t3", "arew", "supo", "karl", "agemem"] },
       { id: "hierarchy", index: "04", title: "Long-horizon agents also need hierarchical state", thesis: "Credit answers who was responsible, but not how to control growing histories or separate planning from execution.", bridge: "GLIDER first builds planner/executor hierarchy with offline actor-critic learning; HiPER makes hierarchical credit explicit; STEP-HRL adds local-progress transitions; HIPIF jointly trains planning, reflection and folding.", methods: ["glider", "hiper", "stephrl", "hipif"] },
-      { id: "opd", index: "05", title: "Dense teacher signal beyond sparse reward", thesis: "On-policy distillation corrects the prefixes the student actually visits. When combined with RL, direction and magnitude must remain distinct.", bridge: "OPD/OPSD establish distribution matching; later methods control distillation through skills, feedback, reward anchors, gates and selective anchors.", methods: ["opd", "opsd", "skillsd", "sdpo", "rlsd", "sdar", "serl"] }
+      { id: "opd", index: "05", title: "Dense teacher signal beyond sparse reward", thesis: "On-policy distillation corrects the prefixes the student actually visits. When combined with RL, direction and magnitude must remain distinct.", bridge: "OPD/OPSD establish distribution matching; later methods add skills and feedback, while SPEAR replays self-generated wins and EAPO learns when to consult external experts.", methods: ["opd", "opsd", "skillsd", "sdpo", "rlsd", "sdar", "serl", "spear", "eapo"] }
     ]
   },
 
@@ -79,7 +79,14 @@ window.RESEARCH_DATA = {
     sdpo: { formula: "L_{SDPO}=\\sum_t D(\\pi_\\theta(\\cdot|x,y_{<t},f)\\|\\pi_\\theta(\\cdot|x,y_{<t}))", unit: "token", baseline: "feedback self-teacher", critic: "self-teacher", cost: "feedback forward", benchmarks: "math, code, agents" },
     rlsd: { formula: "g_t=\\operatorname{sgn}(\\hat A^{RL})\\cdot m_t^{SD}", unit: "reward direction / token magnitude", baseline: "reward + self-teacher", critic: "optional", cost: "teacher forward", benchmarks: "RLVR reasoning" },
     sdar: { formula: "L=L_{\\mathrm{GRPO}}+\\lambda_{\\mathrm{SDAR}}\\sum_t\\ell_t^{\\mathrm{SDAR}},\\qquad \\ell_t^{\\mathrm{SDAR}}=g_t\\!\\left(\\log\\pi_\\theta^+(y_t\\mid s_t^+)-\\log\\pi_\\theta(y_t\\mid s_t)\\right)", unit: "trajectory + gated token", baseline: "group + teacher gap", critic: "self-teacher", cost: "teacher + gate", benchmarks: "ALFWorld, Search-QA, WebShop" },
-    serl: { formula: "L=\\sum_{t\\in\\mathcal A}w_t(f_{>t})\\,\\hat A^{task}\\log\\pi_\\theta(a_t|s_t)", unit: "selected action / anchor", baseline: "task reward", critic: "feedback selector", cost: "hindsight feedback", benchmarks: "ALFWorld, WebShop" }
+    serl: { formula: "L=\\sum_{t\\in\\mathcal A}w_t(f_{>t})\\,\\hat A^{task}\\log\\pi_\\theta(a_t|s_t)", unit: "selected action / anchor", baseline: "task reward", critic: "feedback selector", cost: "hindsight feedback", benchmarks: "ALFWorld, WebShop" },
+    t3: { formula: "t^*=\\inf\\left\\{t:\\forall\\tau\\in[t-k,t),\\ d(H_\\tau,H_{\\tau+1})\\le\\Delta_{min}\\right\\},\\qquad \\tau\\leftarrow\\tau_{\\le t^*}", unit: "informative trajectory prefix", baseline: "base PPO / GRPO / GSPO", critic: "optimizer dependent", cost: "progress detector; fewer rollout tokens", benchmarks: "5 active-reasoning tasks" },
+    arew: { formula: "\\widehat A_t=A_t+\\lambda u_t,\\qquad u_t=\\begin{cases}|P_\\tau|^{-1}&z_t=+1\\\\-|N_\\tau|^{-1}&z_t=-1\\\\0&z_t=0\\end{cases}", unit: "AS / BT decision segment", baseline: "outcome advantage + centered critique", critic: "PPO critic retained", cost: "directional critique labels", benchmarks: "7 active-reasoning tasks across 3 domains" },
+    supo: { formula: "\\hat A_j=\\frac{R_j-\\mu_{\\mathcal G}}{\\sigma_{\\mathcal G}},\\qquad J_{SUPO}\\propto\\sum_{i=1}^{I_j+1}\\sum_{t\\in\\tau_{j,i}}\\min(\\rho_{t}\\hat A_j,\\operatorname{clip}(\\rho_t)\\hat A_j)\\mathbf1[T_j\\le H,I_j\\le S]", unit: "tool / summary token", baseline: "rollout group", critic: "no", cost: "summary generation", benchmarks: "CodeGym, BrowseComp-Plus" },
+    karl: { formula: "R(\\tau)=\\lambda_{explore}(\\tau)\\min(R_{task}(\\tau)+R_{format}(\\tau),r_{limit})", unit: "trajectory reward -> tokens", baseline: "GRPO group", critic: "no", cost: "knowledge service + async rollouts", benchmarks: "6 KG / database tasks" },
+    agemem: { formula: "R(\\tau)=\\mathbf w^\\top[R_{task},R_{context},R_{memory}]+P_{penalty},\\qquad A_t=A_T", unit: "memory / reasoning step", baseline: "trajectory group", critic: "no", cost: "3-stage rollout + LLM judge", benchmarks: "5 long-context benchmarks" },
+    spear: { formula: "J_{total}=J_{GRPO}+\\gamma(t)\\widetilde J_{SIL},\\qquad \\widetilde A_i=R_i-P_{50}(D_R)", unit: "replayed trajectory / token", baseline: "group + replay median", critic: "no", cost: "FIFO replay + extra updates", benchmarks: "ALFWorld, WebShop, Sokoban, AIME" },
+    eapo: { formula: "J_{EAPO}=\\mathbb E_{H_T\\sim\\pi_\\theta(\\cdot|x)}[R(E(H_T),g)],\\qquad \\rho_s=s^{-1}", unit: "reasoning / consultation action", baseline: "outcome reward", critic: "not specified", cost: "training-time expert pool", benchmarks: "AIME, AIMO plus 8 transfer benchmarks" }
   },
 
   notes: {
@@ -110,7 +117,14 @@ window.RESEARCH_DATA = {
       sdpo: { claim: "错误信息、verifier 文本和工具反馈包含比二元 reward 更密集的信息，可让当前模型在反馈条件下自教。", evidence: "多类可验证任务上展示 rich-feedback self-distillation 的收益，并提供 verl 代码。", caveat: "反馈可能噪声化或泄漏答案，额外 teacher forward 增加训练成本。", read: "SDPO 把 environment feedback 从 reward scalar 重新解释为 teacher context。" },
       rlsd: { claim: "环境 reward 应决定更新方向，自蒸馏只决定哪些 token 更新更强。", evidence: "论文通过稳定性实验与消融说明 teacher-only direction 容易受 privileged leakage 影响。", caveat: "magnitude reweighting 仍依赖 teacher-student gap 的校准，可能放大错误置信度。", read: "RLSD 的核心是信号职责分离：reward 负责 sign，distillation 负责 scale。" },
       sdar: { claim: "多轮 OPSD 应作为 gated auxiliary loss，而不应直接重写 GRPO advantage。", evidence: "ALFWorld、Search-QA、WebShop 上验证 entropy/gap gate 与动态 teacher 的组合。", caveat: "门控阈值和 teacher 同步引入额外敏感性，收益依赖 privileged skill 质量。", read: "SDAR 提供了更保守的 OPD+RL 接口：主 RL 语义保持不变，teacher 只在可信位置发言。" },
-      serl: { claim: "事后反馈不是越多越好，关键是选择蒸馏什么，以及把信号放在哪个可执行 action/anchor。", evidence: "多轮 Agent benchmark 上比较反馈来源、placement 与 selective reweighting。", caveat: "feedback selector 自身可能产生偏差；未来观测与当前动作的因果相关性并不自动成立。", read: "SERL 把 dense supervision 问题从‘有没有反馈’推进到‘反馈与动作是否对齐’。" }
+      serl: { claim: "事后反馈不是越多越好，关键是选择蒸馏什么，以及把信号放在哪个可执行 action/anchor。", evidence: "多轮 Agent benchmark 上比较反馈来源、placement 与 selective reweighting。", caveat: "feedback selector 自身可能产生偏差；未来观测与当前动作的因果相关性并不自动成立。", read: "SERL 把 dense supervision 问题从‘有没有反馈’推进到‘反馈与动作是否对齐’。" },
+      t3: { claim: "active reasoning 的 belief 一旦进入持续停滞区，后续无效动作会污染甚至反转早期探索动作的 advantage。", evidence: "ICLR 2026 Oral 在五项交互推理任务上把 T³ 接入 PPO、GRPO 与 GSPO，最高提升 30 points，并减少最高 34% token cost。", caveat: "精确 belief 不可观测，因此每个环境都要设计 progress proxy；依赖 ground truth 的 proxy 在真实部署时未必可得。", read: "T³ 不直接做更细 credit，而是先删除会让 credit 失真的 rollout 尾部；它是 data-side wrapper，不是新 policy loss。" },
+      arew: { claim: "Action Selection 与 Belief Tracking 会互相遮蔽学习信号，使 outcome RL 锁死在低信息行为；方向性 critique 足以打破这种耦合。", evidence: "ICML 2026 在七项 active-reasoning task 上报告最高 60-point gain，并验证 critique weighted accuracy 只需优于随机。", caveat: "AS/BT 交替结构与 truth-aligned belief readout 需要任务配合；critique 不是 free signal，其规则质量仍决定偏差。", read: "AREW 是 T³ 的推进：从截断坏尾部转向在同一轨迹内零和地转移 advantage，明确奖励‘问得好’与‘用得好’。" },
+      supo: { claim: "summary 既然决定后续可见状态，就应作为 policy action 与 tool use 一起由最终任务奖励训练。", evidence: "ACL 2026 在 CodeGym 与 BrowseComp-Plus 上分别比 GRPO 提升 3.2 和 14 points，并把 64K working context 扩展到 192K effective context。", caveat: "所有 segment 仍共享一个 rollout advantage，summary 的局部因果 credit 没被辨别；论文未确认官方代码。", read: "SUPO 的关键不是‘加一个摘要器’，而是把 context transition 写入 MDP，并证明现有 GRPO 基础设施可对 summary token 反向传播。" },
+      karl: { claim: "知识密集 Agent 不仅要学会用工具，还要学会何时、向哪里主动探索外部结构化知识。", evidence: "ACL 2026 在 KG 与 database 六项任务上进行动态知识、curiosity reward 和静态知识消融；官方仓库开放基于 veRL 的异步训练与环境。", caveat: "curiosity 以 trajectory multiplier 进入，仍不能区分哪个查询真正导致成功；知识源构建和 novelty 定义依赖领域。", read: "KARL 是 reward 与系统侧扩展，不是新的 GRPO estimator：它把 exploration objective 和异步环境工程补到多轮训练闭环。" },
+      agemem: { claim: "LTM 与 STM 不应是外置 heuristic，而应成为同一 policy 可学习的工具动作，并由延迟任务结果联合优化。", evidence: "ACL 2026 Highlight 在五项长上下文任务上评估；官方实现使用 Trinity-RFT 与 AgentScope，提供三阶段训练配置。", caveat: "论文称 step-wise GRPO，但公式把同一个 terminal group advantage 广播给全部 step；细粒度因果归因并未真正解决，且多项 reward 依赖 LLM judge。", read: "AgeMem 的贡献在 action space 与 curriculum，而不是新 advantage estimator；阅读时要把‘记录到 step’与‘得到 step-specific credit’区分开。" },
+      spear: { claim: "长程 Agent 的探索不应只靠 entropy；先用逐步衰减的工具奖励学会交互，再逐步增强对自身成功轨迹的模仿，可避免早期过拟合。", evidence: "ICLR 2026 在 ALFWorld、WebShop、Sokoban 与 AIME 上兼容 GRPO/GiGPO/Dr.BoT；官方开放 veRL 与 veRL-Agent 实现及 checkpoint。", caveat: "replay 是 off-policy self-imitation，并非严格 on-policy distillation；FIFO buffer 与 median baseline 会引入陈旧样本和选择偏差。", read: "SPEAR 把 self-generated experience 变成 curriculum：早期扩展 skill-level coverage，后期沿成功路径做 action-level exploitation。" },
+      eapo: { claim: "把咨询强模型设为训练期可学习 action，再逐步撤掉访问权，可以用 outcome RL 隐式内化专家策略。", evidence: "ICML 2026 在 AIME/AIMO 上平均比 self-exploratory RL 高约 5 points，并在代码、科学问答和知识问答上测试迁移。", caveat: "没有显式 KD divergence，也未确认完整训练代码；专家调用成本高，且错误专家会把探索偏向错误的高奖励区域。", read: "EAPO 位于 distillation 与 agent RL 交界：teacher 不直接提供 loss，而是改变 on-policy context；最终 reward 同时训练‘何时问’和‘问完怎么用’。" }
     },
     en: {}
   }
