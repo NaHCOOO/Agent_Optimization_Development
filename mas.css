@@ -10,6 +10,7 @@
   border-radius: 7px;
   background: var(--paper);
   overflow: hidden;
+  max-width: 100%;
 }
 
 .research-switch a {
@@ -21,6 +22,7 @@
   color: var(--muted);
   font-size: 12px;
   font-weight: 760;
+  min-width: 0;
 }
 
 .research-switch a + a {
@@ -239,6 +241,20 @@
 
 .mas-story-map .story-map-node {
   width: 110px;
+  height: 58px;
+  background: white;
+}
+
+.mas-story-map .story-map-node strong {
+  white-space: normal;
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.mas-reader .workflow-authors {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .mas-story-map .mas-bridge-node {
@@ -738,6 +754,20 @@ button.timeline-paper {
 }
 
 @media (max-width: 560px) {
+  .research-switch {
+    flex-direction: column;
+  }
+
+  .research-switch a {
+    justify-content: flex-start;
+    padding: 10px 14px;
+  }
+
+  .research-switch a + a {
+    border-left: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
   .research-switch b {
     font-size: 10px;
   }

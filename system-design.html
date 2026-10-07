@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
     <link rel="stylesheet" href="./styles.css?v=27">
-    <link rel="stylesheet" href="./mas.css?v=27">
+    <link rel="stylesheet" href="./mas.css?v=29">
   </head>
   <body class="mas-page">
     <header class="topbar">
@@ -36,13 +36,14 @@
         <nav class="research-switch" aria-label="Agentic System research modules">
           <a href="./index.html#overview"><span>01</span><b data-ui="moduleOptimization">LLM 训练与优化</b></a>
           <a class="active" href="./system-design.html#overview" aria-current="page"><span>02</span><b data-ui="moduleSystem">Multi-Agent System 设计</b></a>
+          <a href="./workflow.html#overview"><span>03</span><b>Agent System Workflow</b></a>
         </nav>
         <div class="overview-copy">
           <div class="overview-heading">
             <p class="eyebrow" data-ui="overviewEyebrow">Agentic System 的系统设计平面</p>
             <h1 id="mas-overview-title" data-ui="overviewTitle">LLM Multi-Agent System Design</h1>
           </div>
-          <p class="lead" data-ui="overviewLead">这一部分围绕八个核心问题展开：从单个 Agent、团队选择、连接流程、通信形式与信息处理，到执行时动态调整；再通过 MARL 的参数联合优化和长程多轮 LLM 训练，与模型优化方向连接。网页以 25 篇正式论文为核心，并把 workshop 与预印本前沿单独标注。</p>
+          <p class="lead" data-ui="overviewLead">围绕八个核心问题研究 Agentic System 的设计。Q2、Q3 的团队与协作流程连接 Agent System Workflow 专题；Q7、Q8 回接 MARL 与模型训练。</p>
         </div>
         <div class="overview-stats mas-stats" id="mas-stats"></div>
         <div class="plane-contrast" id="plane-contrast"></div>
@@ -167,7 +168,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-    <script src="./mas-data.js?v=27"></script>
-    <script src="./mas-app.js?v=27"></script>
+    <script src="./workflow-data.js?v=29"></script>
+    <script src="./mas-data.js?v=29"></script>
+    <script src="./mas-workflow.js?v=29"></script>
+    <script src="./mas-app.js?v=29"></script>
   </body>
 </html>

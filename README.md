@@ -1,9 +1,10 @@
 # Agentic System Research Atlas
 
-An interactive bilingual research atlas with two parallel modules:
+An interactive bilingual research atlas with three connected modules:
 
-- **Agent Optimization Development**: 27 methods for long-horizon, multi-turn LLM training, credit assignment, hierarchy, reinforcement learning, and on-policy distillation.
-- **LLM Multi-Agent System Design**: 25 formal papers on Agent construction, team selection, topology, workflow, communication, runtime adaptation, reliability, and MARL transfer.
+- **Agent Optimization Development**: long-horizon, multi-turn LLM training, credit assignment, hierarchy, reinforcement learning, and on-policy distillation.
+- **LLM Multi-Agent System Design**: 37 papers organized around eight questions covering Agent construction, teams, collaboration, communication, adaptation, and MARL transfer.
+- **(Multi-)Agent System Workflow**: 22 methods on manual protocols, conditional structure generation, and execution-feedback optimization, deepening Q3 and parts of Q2.
 
 The modules meet at the joint objective over model parameters `theta` and system parameters `phi`.
 
@@ -11,6 +12,9 @@ The modules meet at the joint objective over model parameters `theta` and system
 
 - Optimization: https://nahcooo.github.io/Agent_Optimization_Development/
 - System design: https://nahcooo.github.io/Agent_Optimization_Development/system-design.html
+- Workflow: https://nahcooo.github.io/Agent_Optimization_Development/workflow.html
+
+Workflow venue, author, code, formula, and bilingual method data are maintained in `workflow-data.js`. `mas-workflow.js` shares the same audit with the MAS overview. See `WORKFLOW_RESEARCH_NOTES.md` for source/version exceptions.
 
 ## Local preview
 

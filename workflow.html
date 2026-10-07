@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agent System Workflow 研究：人工协作协议、条件拓扑生成、执行反馈驱动优化及其与团队选择、LLM 训练的交叉。">
+  <meta property="og:title" content="Agent System Workflow | Agent_Optimization_Development">
+  <meta property="og:type" content="website">
+  <title>Agent System Workflow | Agent_Optimization_Development</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+  <link rel="stylesheet" href="./styles.css?v=29">
+  <link rel="stylesheet" href="./mas.css?v=29">
+  <link rel="stylesheet" href="./workflow.css?v=29">
+</head>
+<body class="mas-page workflow-page">
+  <header class="topbar">
+    <a class="brand" href="./index.html#overview"><span class="brand-mark" aria-hidden="true">AS</span><span><strong>Agentic System</strong><small>Research Atlas</small></span></a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#framework" data-wf="navFramework">研究框架</a><a href="#story" data-wf="navStory">演进与关系</a><a href="#workbench" data-wf="navWorkbench">方法工作台</a><a href="#compare" data-wf="navCompare">并排对比</a><a href="#timeline" data-wf="navTimeline">时间线</a><a href="#library" data-wf="navLibrary">论文库</a>
+    </nav>
+    <button class="language-toggle" id="workflow-language-toggle" type="button" aria-label="Switch language">EN</button>
+  </header>
+  <main>
+    <section id="overview" class="overview section mas-overview" aria-labelledby="workflow-title">
+      <nav class="research-switch" aria-label="Agentic System research modules">
+        <a href="./index.html#overview"><span>01</span><b data-wf="moduleOptimization">LLM 训练与优化</b></a>
+        <a href="./system-design.html#overview"><span>02</span><b data-wf="moduleSystem">Multi-Agent System 设计</b></a>
+        <a class="active" aria-current="page" href="./workflow.html#overview"><span>03</span><b>Agent System Workflow</b></a>
+      </nav>
+      <div class="overview-copy"><div class="overview-heading"><p class="eyebrow" data-wf="eyebrow">Q2 × Q3 的专题研究</p><h1 id="workflow-title">(Multi-)Agent System Workflow</h1></div><p class="lead" data-wf="lead">围绕“选哪些 Agent / Operator、怎样连接、按什么流程执行”梳理人工协议、条件结构生成与执行反馈优化。它是系统设计的深入分支，与模型训练共享任务反馈，但优化变量不同。</p></div>
+      <div class="overview-stats mas-stats" id="workflow-stats"></div>
+      <div class="workflow-scope" id="workflow-scope"></div>
+    </section>
+    <section id="framework" class="section" aria-labelledby="workflow-framework-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="frameworkEyebrow">按优化机制分类</p><h2 id="workflow-framework-title" data-wf="frameworkTitle">三条路线，两个容易混淆的边界</h2></div><p data-wf="frameworkLead">数据来源、学习机制与运行时调整是不同维度。同一方法可跨路线，表中的主归属用于定位，不表示互斥。</p></div>
+      <div id="workflow-routes" class="workflow-routes"></div>
+      <div id="workflow-boundaries" class="workflow-boundaries"></div>
+    </section>
+    <section id="story" class="section" aria-labelledby="workflow-story-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="storyEyebrow">从人工协作到结构分布</p><h2 id="workflow-story-title" data-wf="storyTitle">方法演进与关系</h2></div><p data-wf="storyLead">横轴采用已核验的早期公开月份；未核验更早版本时采用会议月。正式会议信息单独展示。关系边是机制对照，不代表直接引用。</p></div>
+      <div class="story-map-shell"><div class="story-map-toolbar"><div><h3 data-wf="mapTitle">协议 → 搜索 → 条件生成与反馈精细化</h3><p data-wf="mapHint">实线表示同路线机制推进，虚线表示跨路线连接；选中方法可查看相邻关系的含义。</p></div><div class="story-map-key"><span><i class="route-line"></i><b data-wf="sameRoute">路线内</b></span><span><i class="fusion-line"></i><b data-wf="crossRoute">跨路线</b></span></div></div><div class="story-map-scroll"><div class="story-map workflow-map" id="workflow-map"></div></div><div class="workflow-relations" id="workflow-relations" aria-live="polite"></div></div>
+      <div id="workflow-stories" class="mas-story-stack"></div>
+    </section>
+    <section id="workbench" class="section" aria-labelledby="workflow-workbench-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="workbenchEyebrow">逐篇对齐优化对象与证据</p><h2 id="workflow-workbench-title" data-wf="navWorkbench">方法工作台</h2></div><p data-wf="workbenchLead">作者、方法机制、数据来源、优化策略、动态粒度、参数更新、实验范围和局限分别核对。</p></div>
+      <div class="workbench-shell mas-workbench-shell"><aside class="method-index" aria-label="Method index"><label class="search-field"><span data-wf="search">搜索方法</span><input id="workflow-search" type="search" placeholder="GTD / FlowMAS / diffusion"></label><div id="workflow-filter" class="category-segments"></div><div id="workflow-method-list" class="method-list"></div></aside><article class="reader mas-reader" id="workflow-reader" aria-live="polite"></article></div>
+    </section>
+    <section id="compare" class="section" aria-labelledby="workflow-compare-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="compareEyebrow">在相同维度下比较</p><h2 id="workflow-compare-title" data-wf="navCompare">并排对比</h2></div><p data-wf="compareLead">并列核对三种结构设计机制，而不是把所有方法都写成“根据任务生成图”。</p></div>
+      <div id="workflow-compare-controls" class="workflow-compare-controls"></div><div id="workflow-compare" class="workflow-compare"></div>
+      <div id="workflow-comparison-table" class="paper-table-wrap"></div>
+    </section>
+    <section id="intersection" class="section" aria-labelledby="workflow-intersection-title">
+      <div class="section-heading"><p class="eyebrow" data-wf="intersectionEyebrow">回到 Agentic System 的共同问题</p><h2 id="workflow-intersection-title" data-wf="intersectionTitle">Workflow φ 与语言策略 θ</h2></div><div id="workflow-intersection" class="workflow-boundaries"></div>
+    </section>
+    <section id="timeline" class="section" aria-labelledby="workflow-timeline-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="timelineEyebrow">公开月份与发表状态分开</p><h2 id="workflow-timeline-title" data-wf="navTimeline">时间线</h2></div><p data-wf="timelineLead">A 为正式主会来源，B 为已接收作者版，C 为未核验正式发表的预印本。FlowMAS 的 2026.12 是计划会议月份，不是当前已有 proceedings。</p></div><div id="workflow-timeline" class="mas-timeline"></div>
+    </section>
+    <section id="library" class="section" aria-labelledby="workflow-library-title">
+      <div class="section-heading split-heading"><div><p class="eyebrow" data-wf="libraryEyebrow">正式原文、作者代码与框架</p><h2 id="workflow-library-title" data-wf="libraryTitle">论文库与开源核验</h2></div><p data-wf="libraryLead">优先链接主会原文。正式 PDF 下载受限时保留正式入口，明确标注本地阅读的作者版。代码可访问、仅宣布地址和未确认公开分开记录。</p></div>
+      <div class="library-controls"><label class="search-field library-search"><span data-wf="librarySearch">筛选论文库</span><input id="workflow-library-search" type="search" placeholder="ACL / author / framework"></label><label class="check-control"><input id="workflow-open-only" type="checkbox"><span data-wf="openOnly">仅看已确认公开代码</span></label><label class="check-control"><input id="workflow-formal-only" type="checkbox"><span data-wf="formalOnly">仅看正式主会来源</span></label></div><div id="workflow-library" class="paper-table-wrap"></div>
+    </section>
+  </main>
+  <footer><p data-wf="footer">核验日期：2026.10.07。方法公式为统一解释示意，不冒充论文原式；局限栏包含研究者分析。</p><a href="./WORKFLOW_RESEARCH_NOTES.md" data-wf="auditLink">来源与分类核验记录</a></footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script src="./workflow-data.js?v=29"></script>
+  <script src="./workflow-app.js?v=29"></script>
+</body>
+</html>

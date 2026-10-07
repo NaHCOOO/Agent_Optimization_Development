@@ -1,6 +1,6 @@
 # LLM Multi-Agent System Design: Source Notes
 
-The `system-design.html` module is backed by a locally verified corpus of 25 papers. The website prefers formal ICLR, ICML, NeurIPS, ACL, and COLM versions over arXiv landing pages.
+The `system-design.html` module now contains 37 papers, with formal sources and accepted author versions labeled separately. Its Q2/Q3 material shares the audited catalog in `workflow-data.js` with the focused `workflow.html` module. Audit date: 2026-10-07.
 
 ## Parallel research planes
 
@@ -28,15 +28,15 @@ Q1-Q6 define the system-design module. Q7 is the bridge to traditional MARL. Q8 
 
 ## Relationship-map policy
 
-The website places the 25 core papers on Q1-Q7 swimlanes and uses a separate Q8 bridge node for the parallel LLM Optimization module. Solid edges indicate conceptual progression within one research question; dashed edges indicate mechanism transfer or convergence across questions. These edges summarize the research lineage established by the comparative reading and must not be interpreted as direct citation claims unless a paper explicitly states that relationship.
+The website places the catalog on Q1-Q7 swimlanes with a separate Q8 bridge. Tracks expand to avoid collisions. Solid edges indicate conceptual progression within a question; dashed edges compare mechanisms across questions, not direct citations. Conference dates include planned dates for accepted papers such as FlowMAS; the dedicated Workflow page separately shows early public dates.
 
 ## Core corpus by workbench category
 
 | Route | Papers |
 |---|---|
-| Agent design | ReAct, MetaGPT, ChatDev, ADAS |
-| Team selection | DyLAN, MaAS, Fleet of Agents |
-| Workflow and topology | GPTSwarm, AFlow, AgentPrune, Flow |
+| Agent design | ReAct; ADAS additionally tagged Q1 |
+| Team selection | DyLAN, MaAS, Fleet of Agents, AgentVerse, LLM-Blender (ensemble comparator) |
+| Workflow and topology | MetaGPT, ChatDev, AutoGen, LLM Debate, GPTSwarm, ADAS, G-Designer, AFlow, AgentPrune, Flow, GTD, CARD, RADAR, MAGE, CE-Graph, AutoRAS, FlowMAS |
 | Communication medium | DIAL, Language Grounded MARL, LatentMAS |
 | Information exchange and receiver processing | TarMAC, MASIA, ReConcile, Should We Be Going MAD?, MAS Resilience, MAST |
 | Runtime adaptation | Evolving Orchestration |
@@ -46,14 +46,16 @@ The website places the 25 core papers on Q1-Q7 swimlanes and uses a separate Q8 
 
 - MaAS is ICML 2025 Oral; GPTSwarm is ICML 2024 Oral.
 - DyLAN has a formal COLM 2024 version.
-- G-Designer is an ICLR 2025 FM-Wild Workshop paper, not an ICLR main-conference paper.
-- RADAR is treated as an arXiv 2026 frontier paper.
+- G-Designer has an ICML 2025 main-conference version, replacing the earlier workshop-only label.
+- RADAR, MAGE, CE-Graph, and AutoRAS have ICML 2026 proceedings; GTD has ACL 2026 proceedings; CARD has an ICLR 2026 source.
 - LatentMAS is an ICML 2026 Spotlight; the accepted author version is used while its proceedings link stabilizes.
 - MASIA is a NeurIPS 2022 MARL communication paper and is presented as a transferable foundation, not an LLM-MAS method.
-- Flow, AFlow, ADAS, and AgentPrune are separate methods. `Flow` should not be renamed `FlowMAS` without a precise source.
+- Flow, AFlow, ADAS, and AgentPrune are distinct. FlowMAS is a separate NeurIPS 2026 accepted paper, using an author PDF while proceedings are pending. Acceptance is confirmed by the Xiamen University lab notice; the author's announced repository currently returns 404 to public access.
+- Codebook Agent is a September 2026 preprint, shown in frontier context and the focused Workflow page.
+- AutoGen, CARD, and DyLAN formal OpenReview PDF downloads returned 403. Their formal entries remain linked; locally read author copies are explicitly labeled. Venue verification does not imply a successful formal PDF download.
 
 ## Open source and frameworks
 
-All 25 core entries have a public author-linked code, data, or reference repository. Reproducibility still varies because many projects require closed LLM APIs or benchmark-specific evaluators.
+The previous corpus had public reference resources. In the expanded corpus, CE-Graph's public code is unconfirmed; MAGE and FlowMAS announce repositories whose public access returned 404 in this audit. A link announcement is not counted as a confirmed open-source release. Reproducibility still varies because closed LLM APIs and benchmark-specific evaluators are common.
 
 The dominant implementation pattern is custom Python orchestration. Notable substrates include MetaGPT, GPTSwarm, Hugging Face Transformers, vLLM, PyMARL, and the authors' own runtimes. veRL is not the default because most system-design papers freeze LLM weights and optimize prompts, graph edges, code, discrete workflows, or a controller. veRL and AReaL become more relevant on the parallel model-optimization page when LLM parameters are updated.
